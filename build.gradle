@@ -21,12 +21,19 @@ targetCompatibility = 1.8
 
 repositories {
     mavenLocal()
+    mavenCentral()
     maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
     maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
-    mavenCentral()
 }
 
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web'
-    testCompile "org.springframework.boot:spring-boot-starter-test"
+	compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+	compile 'org.flywaydb:flyway-core'
+    compile 'mysql:mysql-connector-java'
+	testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+	useJUnitPlatform()
 }

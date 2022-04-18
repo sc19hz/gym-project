@@ -1,57 +1,57 @@
 package gym.data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 /**
- * Represents a {@link User}'s reservation to a sport site including the time and duration
- *  
  * @author Giant_Salted_Fish
  */
-@Entity
+@Entity(name = "reservation")
 public class Reservation
 {
 	@Id
 	@GeneratedValue
-	private Integer id;
+	@Column(name = "reservation_id", nullable = false)
+	private int reservationId;
 	
-	private Integer userId;
+	@Column(name = "user_id", nullable = false)
+	private int userId;
 	
-	private Integer
-		sportSiteId,
-		roomId,
-		seatId;
+	@Column(name = "activity_id", nullable = false)
+	private int activityId;
 	
-	private Long
-		date,
-		duration;
+	@Column(name = "reservation_start_time", nullable = false)
+	private long reservationStartTime;
 	
-	public Integer getId() { return this.id; }
+	@Column(name = "reservation_end_time", nullable = false)
+	private long reservationEndTime;
 	
-	public void setId(Integer id) { this.id = id; }
+	@Column(name = "venue_id", nullable = false)
+	private int venue_id;
 	
-	public Integer getUserId() { return this.userId; }
+	public int getReservationId() { return this.reservationId; }
 	
-	public void setUserId(Integer userId) { this.userId = userId; }
+	public void setReservationId(int reservationId) { this.reservationId = reservationId; }
 	
-	public Integer getSportSiteId() { return this.sportSiteId; }
+	public int getUserId() { return this.userId; }
 	
-	public void setSportSiteId(Integer sportSiteId) { this.sportSiteId = sportSiteId; }
+	public void setUserId(int userId) { this.userId = userId; }
 	
-	public Integer getRoomId() { return this.roomId; }
+	public int getActivityId() { return this.activityId; }
 	
-	public void setRoomId(Integer roomId) { this.roomId = roomId; }
+	public void setActivityId(int activityId) { this.activityId = activityId; }
 	
-	public Integer getSeatId() { return this.seatId; }
+	public long getReservationStartTime() { return this.reservationStartTime; }
 	
-	public void setSeatId(Integer seatId) { this.seatId = seatId; }
+	public void setReservationStartTime(long reservationStartTime) { this.reservationStartTime = reservationStartTime; }
 	
-	public Long getDate() { return this.date; }
+	public long getReservationEndTime() { return this.reservationEndTime; }
 	
-	public void setDate(Long date) { this.date = date; }
+	public void setReservationEndTime(long reservationEndTime) { this.reservationEndTime = reservationEndTime; }
 	
-	public Long getDuration() { return this.duration; }
+	public int getVenue_id() { return this.venue_id; }
 	
-	public void setDuration(Long duration) { this.duration = duration; }
+	public void setVenue_id(int venue_id) { this.venue_id = venue_id; }
 }

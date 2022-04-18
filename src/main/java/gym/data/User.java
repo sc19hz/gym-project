@@ -1,5 +1,6 @@
 package gym.data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -7,47 +8,99 @@ import javax.persistence.Id;
 /**
  * @author Giant_Salted_Fish
  */
-@Entity
+@Entity(name = "user")
 public class User
 {
 	@Id
 	@GeneratedValue
-	private Integer id;
+	@Column(name = "user_id", nullable = false)
+	private int userId;
 	
-	private String
-		account,
-		password;
+	@Column(name = "username", nullable = false, length = 64)
+	private String username;
 	
-	/**
-	 * User's display name
-	 */
-	private String display;
+	@Column(name = "picture", nullable = false, length = 64)
+	private String picture;
 	
-	private Integer
-		height = 170,
-		weight = 70;
+	@Column(name = "email", nullable = false, length = 64)
+	private String email;
 	
-	public Integer getId() { return this.id; }
+	@Column(name = "password", nullable = false, length = 64)
+	private String password;
 	
-	public void setId(Integer id) { this.id = id; }
+	@Column(name = "user_status", nullable = false)
+	private boolean userStatus;
 	
-	public String getAccount() { return this.account; }
+	@Column(name = "last_login", nullable = false)
+	private long lastLogin;
 	
-	public void setAccount(String account) { this.account = account; }
+	@Column(name = "reservation_status", nullable = false)
+	private byte reservationStatus;
+	
+	@Column(name = "account", nullable = false)
+	private int account;
+	
+	@Column(name = "gender", nullable = false, length = 16)
+	private String gender;
+	
+	@Column(name = "height", nullable = false)
+	private int height;
+	
+	@Column(name = "weight", nullable = false)
+	private int weight;
+	
+	@Column(name = "total_training_hours", nullable = false)
+	private int totalTrainingHours;
+	
+	public int getUserId() { return this.userId; }
+	
+	public void setUserId(int userId) { this.userId = userId; }
+	
+	public String getUsername() { return this.username; }
+	
+	public void setUsername(String username) { this.username = username; }
+	
+	public String getPicture() { return this.picture; }
+	
+	public void setPicture(String picture) { this.picture = picture; }
+	
+	public String getEmail() { return this.email; }
+	
+	public void setEmail(String email) { this.email = email; }
 	
 	public String getPassword() { return this.password; }
 	
 	public void setPassword(String password) { this.password = password; }
 	
-	public String getDisplay() { return this.display; }
+	public boolean isUserStatus() { return this.userStatus; }
 	
-	public void setDisplay(String display) { this.display = display; }
+	public void setUserStatus(boolean userStatus) { this.userStatus = userStatus; }
 	
-	public Integer getHeight() { return this.height; }
+	public long getLastLogin() { return this.lastLogin; }
 	
-	public void setHeight(Integer height) { this.height = height; }
+	public void setLastLogin(long lastLogin) { this.lastLogin = lastLogin; }
 	
-	public Integer getWeight() { return this.weight; }
+	public byte getReservationStatus() { return this.reservationStatus; }
 	
-	public void setWeight(Integer weight) { this.weight = weight; }
+	public void setReservationStatus(byte reservationStatus) { this.reservationStatus = reservationStatus; }
+	
+	public int getAccount() { return this.account; }
+	
+	public void setAccount(int account) { this.account = account; }
+	
+	public String getGender() { return this.gender; }
+	
+	public void setGender(String gender) { this.gender = gender; }
+	
+	public int getHeight() { return this.height; }
+	
+	public void setHeight(int height) { this.height = height; }
+	
+	public int getWeight() { return this.weight; }
+	
+	public void setWeight(int weight) { this.weight = weight; }
+	
+	public int getTotalTrainingHours() { return this.totalTrainingHours; }
+	
+	public void setTotalTrainingHours(int totalTrainingHours) { this.totalTrainingHours = totalTrainingHours; }
 }

@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * @author Giant_Salted_Fish
  */
-public interface SeatRepository extends CrudRepository<Seat, Integer>
+public interface EmployeeRepository extends CrudRepository<Employee, Integer>
 {
-	
+
 }

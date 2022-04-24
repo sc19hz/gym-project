@@ -8,13 +8,13 @@ import javax.persistence.Id;
 /**
  * @author Giant_Salted_Fish
  */
-@Entity(name = "user")
+@Entity(name = "employ")
 public class Employee
 {
 	@Id
 	@GeneratedValue
 	@Column(name = "employee_id", nullable = false)
-	private int employeeId;
+	private Integer employeeId;
 	
 	@Column(name = "email", nullable = false, length = 64)
 	private String email;
@@ -22,12 +22,15 @@ public class Employee
 	@Column(name = "employee_name", nullable = false, length = 64)
 	private String employeeName;
 	
-	@Column(name = "position", length = 64)
+	@Column(name = "position", nullable = false, length = 64)
 	private String position;
 	
-	public int getEmployeeId() { return this.employeeId; }
+	@Column(name = "user_id", nullable = false)
+	private Integer userId;
 	
-	public void setEmployeeId(int employeeId) { this.employeeId = employeeId; }
+	public Integer getEmployeeId() { return this.employeeId; }
+	
+	public void setEmployeeId(Integer employeeId) { this.employeeId = employeeId; }
 	
 	public String getEmail() { return this.email; }
 	
@@ -40,4 +43,8 @@ public class Employee
 	public String getPosition() { return this.position; }
 	
 	public void setPosition(String position) { this.position = position; }
+	
+	public Integer getUserId() { return this.userId; }
+	
+	public void setUserId(Integer userId) { this.userId = userId; }
 }

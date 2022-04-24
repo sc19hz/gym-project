@@ -11,10 +11,19 @@ import javax.persistence.Id;
 @Entity(name = "user")
 public class User
 {
+	public static final String DEF_PICTURE = "?";
+	
+	public static final String DEF_GENDER = "?";
+	
+	public static final Integer
+		ON_TIME = 0,
+		OVERDUE = 1,
+		WAITING = 2;
+	
 	@Id
 	@GeneratedValue
 	@Column(name = "user_id", nullable = false)
-	private int userId;
+	private Integer userId;
 	
 	@Column(name = "username", nullable = false, length = 64)
 	private String username;
@@ -29,32 +38,32 @@ public class User
 	private String password;
 	
 	@Column(name = "user_status", nullable = false)
-	private boolean userStatus;
+	private Boolean userStatus;
 	
 	@Column(name = "last_login", nullable = false)
-	private long lastLogin;
+	private Long lastLogin;
 	
 	@Column(name = "reservation_status", nullable = false)
-	private byte reservationStatus;
+	private Integer reservationStatus;
 	
-	@Column(name = "account", nullable = false)
-	private int account;
+	@Column(name = "amount", nullable = false)
+	private Integer amount;
 	
 	@Column(name = "gender", nullable = false, length = 16)
 	private String gender;
 	
 	@Column(name = "height", nullable = false)
-	private int height;
+	private Integer height;
 	
 	@Column(name = "weight", nullable = false)
-	private int weight;
+	private Integer weight;
 	
 	@Column(name = "total_training_hours", nullable = false)
-	private int totalTrainingHours;
+	private Integer totalTrainingHours;
 	
-	public int getUserId() { return this.userId; }
+	public Integer getUserId() { return this.userId; }
 	
-	public void setUserId(int userId) { this.userId = userId; }
+	public void setUserId(Integer userId) { this.userId = userId; }
 	
 	public String getUsername() { return this.username; }
 	
@@ -72,35 +81,35 @@ public class User
 	
 	public void setPassword(String password) { this.password = password; }
 	
-	public boolean isUserStatus() { return this.userStatus; }
+	public Boolean isUserStatus() { return this.userStatus; }
 	
-	public void setUserStatus(boolean userStatus) { this.userStatus = userStatus; }
+	public void setUserStatus(Boolean userStatus) { this.userStatus = userStatus; }
 	
-	public long getLastLogin() { return this.lastLogin; }
+	public Long getLastLogin() { return this.lastLogin; }
 	
-	public void setLastLogin(long lastLogin) { this.lastLogin = lastLogin; }
+	public void setLastLogin(Long lastLogin) { this.lastLogin = lastLogin; }
 	
-	public byte getReservationStatus() { return this.reservationStatus; }
+	public Integer getReservationStatus() { return this.reservationStatus; }
 	
-	public void setReservationStatus(byte reservationStatus) { this.reservationStatus = reservationStatus; }
+	public void setReservationStatus(Integer reservationStatus) { this.reservationStatus = reservationStatus; }
 	
-	public int getAccount() { return this.account; }
+	public Integer getAmount() { return this.amount; }
 	
-	public void setAccount(int account) { this.account = account; }
+	public void setAmount(Integer amount) { this.amount = amount; }
 	
 	public String getGender() { return this.gender; }
 	
 	public void setGender(String gender) { this.gender = gender; }
 	
-	public int getHeight() { return this.height; }
+	public Integer getHeight() { return this.height; }
 	
-	public void setHeight(int height) { this.height = height; }
+	public void setHeight(Integer height) { this.height = height; }
 	
-	public int getWeight() { return this.weight; }
+	public Integer getWeight() { return this.weight; }
 	
-	public void setWeight(int weight) { this.weight = weight; }
+	public void setWeight(Integer weight) { this.weight = weight; }
 	
-	public int getTotalTrainingHours() { return this.totalTrainingHours; }
+	public Integer getTotalTrainingHours() { return this.totalTrainingHours; }
 	
-	public void setTotalTrainingHours(int totalTrainingHours) { this.totalTrainingHours = totalTrainingHours; }
+	public void setTotalTrainingHours(Integer totalTrainingHours) { this.totalTrainingHours = totalTrainingHours; }
 }

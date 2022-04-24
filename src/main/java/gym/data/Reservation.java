@@ -14,44 +14,44 @@ public class Reservation
 	@Id
 	@GeneratedValue
 	@Column(name = "reservation_id", nullable = false)
-	private int reservationId;
+	private Integer reservationId;
 	
 	@Column(name = "user_id", nullable = false)
-	private int userId;
-	
-	@Column(name = "activity_id", nullable = false)
-	private int activityId;
-	
-	@Column(name = "reservation_start_time", nullable = false)
-	private long reservationStartTime;
-	
-	@Column(name = "reservation_end_time", nullable = false)
-	private long reservationEndTime;
+	private Integer userId;
 	
 	@Column(name = "venue_id", nullable = false)
-	private int venue_id;
+	private Integer venue_id;
 	
-	public int getReservationId() { return this.reservationId; }
+	@Column(name = "reservation_start_time", nullable = false)
+	private Long reservationStartTime;
 	
-	public void setReservationId(int reservationId) { this.reservationId = reservationId; }
+	@Column(name = "reservation_end_time", nullable = false)
+	private Long reservationEndTime;
 	
-	public int getUserId() { return this.userId; }
+	@Column(name = "reservation_make_time", nullable = false)
+	private Long reservationMakeTime;
 	
-	public void setUserId(int userId) { this.userId = userId; }
+	public Integer getReservationId() { return this.reservationId; }
 	
-	public int getActivityId() { return this.activityId; }
+	public void setReservationId(Integer reservationId) { this.reservationId = reservationId; }
 	
-	public void setActivityId(int activityId) { this.activityId = activityId; }
+	public Integer getUserId() { return this.userId; }
 	
-	public long getReservationStartTime() { return this.reservationStartTime; }
+	public void setUserId(Integer userId) { this.userId = userId; }
 	
-	public void setReservationStartTime(long reservationStartTime) { this.reservationStartTime = reservationStartTime; }
+	public Integer getVenue_id() { return this.venue_id; }
 	
-	public long getReservationEndTime() { return this.reservationEndTime; }
+	public void setVenue_id(Integer venue_id) { this.venue_id = venue_id; }
 	
-	public void setReservationEndTime(long reservationEndTime) { this.reservationEndTime = reservationEndTime; }
+	public Long getReservationStartTime() { return this.reservationStartTime; }
 	
-	public int getVenue_id() { return this.venue_id; }
+	public void setReservationStartTime(Long reservationStartTime) { this.reservationStartTime = reservationStartTime; }
 	
-	public void setVenue_id(int venue_id) { this.venue_id = venue_id; }
+	public Long getReservationEndTime() { return this.reservationEndTime; }
+	
+	public void setReservationEndTime(Long reservationEndTime) { this.reservationEndTime = reservationEndTime; }
+	
+	public Long getReservationMakeTime() { return this.reservationMakeTime; }
+	
+	public void setReservationMakeTime(Long reservationMakeTime) { this.reservationMakeTime = reservationMakeTime; }
 }

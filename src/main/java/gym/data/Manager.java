@@ -14,7 +14,7 @@ public class Manager
 	@Id
 	@GeneratedValue
 	@Column(name = "manager_id", nullable = false)
-	private int managerId;
+	private Integer managerId;
 	
 	@Column(name = "email", nullable = false, length = 64)
 	private String email;
@@ -22,12 +22,15 @@ public class Manager
 	@Column(name = "manager_name", nullable = false, length = 64)
 	private String managerName;
 	
-	@Column(name = "position", length = 256)
+	@Column(name = "position", nullable = false, length = 64)
 	private String position;
 	
-	public int getManagerId() { return this.managerId; }
+	@Column(name = "user_id", nullable = false)
+	private Integer userId;
 	
-	public void setManagerId(int managerId) { this.managerId = managerId; }
+	public Integer getManagerId() { return this.managerId; }
+	
+	public void setManagerId(Integer managerId) { this.managerId = managerId; }
 	
 	public String getEmail() { return this.email; }
 	
@@ -40,4 +43,8 @@ public class Manager
 	public String getPosition() { return this.position; }
 	
 	public void setPosition(String position) { this.position = position; }
+	
+	public Integer getUserId() { return this.userId; }
+	
+	public void setUserId(Integer userId) { this.userId = userId; }
 }

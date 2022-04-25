@@ -20,7 +20,7 @@ public class Reservation
 	private Integer userId;
 	
 	@Column(name = "venue_id", nullable = false)
-	private Integer venue_id;
+	private Integer venueId;
 	
 	@Column(name = "reservation_start_time", nullable = false)
 	private Long reservationStartTime;
@@ -39,9 +39,9 @@ public class Reservation
 	
 	public void setUserId(Integer userId) { this.userId = userId; }
 	
-	public Integer getVenue_id() { return this.venue_id; }
+	public Integer getVenueId() { return this.venueId; }
 	
-	public void setVenue_id(Integer venue_id) { this.venue_id = venue_id; }
+	public void setVenueId(Integer venueId) { this.venueId = venueId; }
 	
 	public Long getReservationStartTime() { return this.reservationStartTime; }
 	

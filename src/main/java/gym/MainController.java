@@ -20,6 +20,7 @@ import gym.data.ActivityRepository;
 import gym.data.Employee;
 import gym.data.EmployeeRepository;
 import gym.data.ManagerRepository;
+import gym.data.Reservation;
 import gym.data.ReservationRepository;
 import gym.data.User;
 import gym.data.UserRepository;
@@ -143,6 +144,32 @@ public class MainController
 		return OK;
 	}
 	
+	@PostMapping(path = "/sort_user")
+	public List<User> sortUser(
+		HttpServletRequest request,
+		@RequestParam String type
+	) {
+		LinkedList<User> result = new LinkedList<>();
+		
+		HttpSession session = request.getSession();
+		Integer uid = (Integer)session.getAttribute(USER_ID);
+		if(uid == null) return result;
+		
+		if(!this.ensureOperator(uid)) return result;
+		
+		for(User u : this.userRepository.findAll())
+			result.add(u);
+		switch(type)
+		{
+		case "BY_TIME":
+			result.sort((u0, u1) -> (int)(u0.getLastLogin() - u1.getLastLogin()));
+			break;
+		default:;
+		}
+		
+		return result;
+	}
+	
 	@PostMapping(path = "/search_user")
 	public List<User> searchUser(
 		HttpServletRequest request,
@@ -166,10 +193,30 @@ public class MainController
 	@PostMapping(path = "/edit_reservation")
 	public String editReservation(
 		HttpServletRequest request,
-		@RequestParam Integer reservation_id
+		@RequestParam Integer reservation_id,
+		@RequestParam Integer venue_id,
+		@RequestParam Long reservation_start_time,
+		@RequestParam Long reservation_end_time
 	) {
-		// TODO
-		return "TODO";
+		HttpSession session = request.getSession();
+		Integer uid = (Integer)session.getAttribute(USER_ID);
+		if(uid == null) return LOGIN_REQUIRED;
+		
+		if(!this.ensureOperator(uid)) return INSUFFICIENT_PERMISSION;
+		
+		Optional<Reservation> target = this.reservationRepository.findById(reservation_id);
+		if(!target.isPresent()) return ERROR_OPERATE_TARGET;
+		
+		Optional<Venue> v = this.venueRepository.findById(venue_id);
+		if(!v.isPresent()) return ERROR_OPERATE_TARGET;
+		
+		Reservation r = target.get();
+		r.setVenueId(venue_id);
+		r.setReservationStartTime(reservation_start_time);
+		r.setReservationEndTime(reservation_end_time);
+		this.reservationRepository.save(r);
+		
+		return OK;
 	}
 	
 	@PostMapping(path = "/edit_user_account")

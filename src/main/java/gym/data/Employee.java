@@ -3,21 +3,19 @@ package gym.data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
  * @author Giant_Salted_Fish
  */
-@Entity(name = "employ")
+@Entity(name = "employee")
 public class Employee
 {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "employee_id", nullable = false)
 	private Integer employeeId;
-	
-	@Column(name = "email", nullable = false, length = 64)
-	private String email;
 	
 	@Column(name = "employee_name", nullable = false, length = 64)
 	private String employeeName;
@@ -25,16 +23,12 @@ public class Employee
 	@Column(name = "position", nullable = false, length = 64)
 	private String position;
 	
-	@Column(name = "user_id", nullable = false)
+	@Column(name = "user_id", nullable = false, unique = true)
 	private Integer userId;
 	
 	public Integer getEmployeeId() { return this.employeeId; }
 	
 	public void setEmployeeId(Integer employeeId) { this.employeeId = employeeId; }
-	
-	public String getEmail() { return this.email; }
-	
-	public void setEmail(String email) { this.email = email; }
 	
 	public String getEmployeeName() { return this.employeeName; }
 	

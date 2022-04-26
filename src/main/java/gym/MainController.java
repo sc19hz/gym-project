@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import gym.data.Activity;
 import gym.data.ActivityRepository;
 import gym.data.Employee;
 import gym.data.EmployeeRepository;
+import gym.data.Manager;
 import gym.data.ManagerRepository;
 import gym.data.Reservation;
 import gym.data.ReservationRepository;
@@ -61,6 +63,37 @@ public class MainController
 	@Autowired
 	private EmployeeRepository employeeRepository;
 	
+	@GetMapping(path = "/hello")
+	public String hello() { return "Hello World!"; }
+	
+	@GetMapping(path = "/debug")
+	public User createDebugUser()
+	{
+		User u = new User();
+		u.setUsername("DEBUGGER"); // TODO
+		u.setPicture(User.DEF_PICTURE);
+		u.setEmail("debugger@email.com");
+		u.setPassword("123456");
+		u.setUserStatus(true);
+		u.setLastLogin(new Date().getTime());
+		u.setReservationStatus(User.WAITING);
+		u.setAmount(0);
+		u.setGender(User.DEF_GENDER); // TODO
+		u.setHeight(0);
+		u.setWeight(0);
+		u.setTotalTrainingHours(0);
+		
+		u = this.userRepository.save(u);
+		
+		Manager m = new Manager();
+		m.setManagerName("Supervisor");
+		m.setPosition("CEO");
+		m.setUserId(u.getUserId());
+		this.managerRepository.save(m);
+		
+		return u;
+	}
+	
 	@PostMapping(path = "/login")
 	public String login(
 		HttpServletRequest request,
@@ -86,6 +119,18 @@ public class MainController
 		return OK;
 	}
 	
+	@GetMapping(path = "/logout")
+	public String logout(HttpServletRequest request)
+	{
+		HttpSession session = request.getSession();
+		session.setMaxInactiveInterval(SESSION_SURVIVE_TIME);
+		if(session.getAttribute(USER_ID) == null) return LOGIN_REQUIRED;
+		
+		session.removeAttribute(USER_ID);
+		
+		return OK;
+	}
+	
 	@PostMapping(path = "/create_account")
 	public String createAccount(
 		HttpServletRequest request,
@@ -102,21 +147,21 @@ public class MainController
 		
 		if(!password.equals(confirm_password)) return ERROR_PASSWORD;
 		
-		User newUser = new User();
-		newUser.setUsername("undefined"); // TODO
-		newUser.setPicture(User.DEF_PICTURE);
-		newUser.setEmail(email);
-		newUser.setPassword(password);
-		newUser.setUserStatus(true);
-		newUser.setLastLogin((long)0);
-		newUser.setReservationStatus(User.WAITING);
-		newUser.setAmount(0);
-		newUser.setGender(User.DEF_GENDER); // TODO
-		newUser.setHeight(0);
-		newUser.setWeight(0);
-		newUser.setTotalTrainingHours(0);
+		User u = new User();
+		u.setUsername("undefined"); // TODO
+		u.setPicture(User.DEF_PICTURE);
+		u.setEmail(email);
+		u.setPassword(password);
+		u.setUserStatus(true);
+		u.setLastLogin((long)0);
+		u.setReservationStatus(User.WAITING);
+		u.setAmount(0);
+		u.setGender(User.DEF_GENDER); // TODO
+		u.setHeight(0);
+		u.setWeight(0);
+		u.setTotalTrainingHours(0);
 		
-		return Integer.toString(this.userRepository.save(newUser).getUserId());
+		return Integer.toString(this.userRepository.save(u).getUserId());
 	}
 	
 	@Transactional
@@ -445,7 +490,7 @@ public class MainController
 		if(!target.isPresent()) return ERROR_OPERATE_TARGET;
 		
 		Employee em = target.get();
-		em.setEmail(email);
+//		em.setEmail(email); // TODO: edit email of corresponding user
 		em.setEmployeeName(employee_name);
 		this.employeeRepository.save(em);
 		
@@ -475,8 +520,8 @@ public class MainController
 	private boolean ensureOperator(Integer id)
 	{
 		return(
-			this.employeeRepository.findById(id).isPresent()
-			|| this.managerRepository.findById(id).isPresent()
+			this.employeeRepository.findByUserId(id).isPresent()
+			|| this.managerRepository.findByUserId(id).isPresent()
 		);
 	}
 }

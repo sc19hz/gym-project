@@ -3,6 +3,7 @@ package gym.data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
@@ -12,12 +13,9 @@ import javax.persistence.Id;
 public class Manager
 {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "manager_id", nullable = false)
 	private Integer managerId;
-	
-	@Column(name = "email", nullable = false, length = 64)
-	private String email;
 	
 	@Column(name = "manager_name", nullable = false, length = 64)
 	private String managerName;
@@ -25,16 +23,12 @@ public class Manager
 	@Column(name = "position", nullable = false, length = 64)
 	private String position;
 	
-	@Column(name = "user_id", nullable = false)
+	@Column(name = "user_id", nullable = false, unique = true)
 	private Integer userId;
 	
 	public Integer getManagerId() { return this.managerId; }
 	
 	public void setManagerId(Integer managerId) { this.managerId = managerId; }
-	
-	public String getEmail() { return this.email; }
-	
-	public void setEmail(String email) { this.email = email; }
 	
 	public String getManagerName() { return this.managerName; }
 	

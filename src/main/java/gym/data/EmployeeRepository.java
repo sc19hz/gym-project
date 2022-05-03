@@ -1,7 +1,5 @@
 package gym.data;
 
-import java.util.Optional;
-
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -9,5 +7,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface EmployeeRepository extends CrudRepository<Employee, Integer>
 {
-	public Optional<Employee> findByUserId(Integer userId);
+
 }

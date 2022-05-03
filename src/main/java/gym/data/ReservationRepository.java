@@ -7,7 +7,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface ReservationRepository extends CrudRepository<Reservation, Integer>
 {
-	public Iterable<Reservation> findAllByUserId(Integer userId);
-	
-	public Long deleteByUserId(Integer userId);
+
 }

@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
+ * Manager of a specific venue
+ * 
  * @author Giant_Salted_Fish
  */
 @Entity(name = "manager")
@@ -14,29 +16,15 @@ public class Manager
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "manager_id", nullable = false)
-	private Integer managerId;
+	@Column(name = "id")
+	private Integer id;
 	
-	@Column(name = "manager_name", nullable = false, length = 64)
-	private String managerName;
-	
-	@Column(name = "position", nullable = false, length = 64)
-	private String position;
-	
-	@Column(name = "user_id", nullable = false, unique = true)
+	@Column(name = "user_id", nullable = false)
 	private Integer userId;
 	
-	public Integer getManagerId() { return this.managerId; }
+	public Integer getId() { return this.id; }
 	
-	public void setManagerId(Integer managerId) { this.managerId = managerId; }
-	
-	public String getManagerName() { return this.managerName; }
-	
-	public void setManagerName(String managerName) { this.managerName = managerName; }
-	
-	public String getPosition() { return this.position; }
-	
-	public void setPosition(String position) { this.position = position; }
+	public void setId(Integer id) { this.id = id; }
 	
 	public Integer getUserId() { return this.userId; }
 	

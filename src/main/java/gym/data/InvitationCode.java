@@ -6,22 +6,27 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name = "employee")
-public class Employee
+/**
+ * Invitation code that created by manager and send to his/her employees to register as an employee
+ * 
+ * @author Giant_Salted_Fish
+ */
+@Entity(name = "invitation_code")
+public class InvitationCode
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
 	
-	@Column(name = "user_id", nullable = false)
-	private Integer userId;
+	@Column(name = "code", nullable = false, length = 256)
+	private String code;
 	
 	public Integer getId() { return this.id; }
 	
 	public void setId(Integer id) { this.id = id; }
 	
-	public Integer getUserId() { return this.userId; }
+	public String getCode() { return this.code; }
 	
-	public void setUserId(Integer userId) { this.userId = userId; }
+	public void setCode(String code) { this.code = code; }
 }

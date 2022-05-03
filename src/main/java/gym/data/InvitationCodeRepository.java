@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * @author Giant_Salted_Fish
  */
-public interface RecordRepository extends CrudRepository<Record, Integer>
+public interface InvitationCodeRepository extends CrudRepository<InvitationCode, Integer>
 {
 
 }

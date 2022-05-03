@@ -6,52 +6,38 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-/**
- * @author Giant_Salted_Fish
- */
 @Entity(name = "user")
 public class User
 {
 	public static final String DEF_PICTURE = "?";
 	
-	public static final String DEF_GENDER = "?";
-	
-	public static final Integer
-		ON_TIME = 0,
-		OVERDUE = 1,
-		WAITING = 2;
+//	public static final String DEF_GENDER = "?";
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_id", nullable = false)
-	private Integer userId;
+	@Column(name = "id")
+	private Integer id;
 	
-	@Column(name = "username", nullable = false, length = 64)
-	private String username;
-	
-	@Column(name = "picture", nullable = false, length = 64)
-	private String picture;
-	
-	@Column(name = "email", nullable = false, length = 64)
+	@Column(name = "email", unique = true, nullable = false, length = 64)
 	private String email;
 	
 	@Column(name = "password", nullable = false, length = 64)
 	private String password;
 	
-	@Column(name = "user_status", nullable = false)
-	private Boolean userStatus;
+	@Column(name = "display_name", nullable = false, length = 64)
+	private String displayName;
+	
+	@Column(name = "icon", nullable = false, length = 256)
+	private String icon;
 	
 	@Column(name = "last_login", nullable = false)
 	private Long lastLogin;
 	
-	@Column(name = "reservation_status", nullable = false)
-	private Integer reservationStatus;
-	
 	@Column(name = "amount", nullable = false)
-	private Integer amount;
+	private Double amount;
 	
-	@Column(name = "gender", nullable = false, length = 16)
-	private String gender;
+	@Column(name = "gender", nullable = false)
+	private Integer gender;
 	
 	@Column(name = "height", nullable = false)
 	private Integer height;
@@ -59,20 +45,12 @@ public class User
 	@Column(name = "weight", nullable = false)
 	private Integer weight;
 	
-	@Column(name = "total_training_hours", nullable = false)
-	private Integer totalTrainingHours;
+	@Column(name = "register_time", nullable = false)
+	private Long registerTime;
 	
-	public Integer getUserId() { return this.userId; }
+	public Integer getId() { return this.id; }
 	
-	public void setUserId(Integer userId) { this.userId = userId; }
-	
-	public String getUsername() { return this.username; }
-	
-	public void setUsername(String username) { this.username = username; }
-	
-	public String getPicture() { return this.picture; }
-	
-	public void setPicture(String picture) { this.picture = picture; }
+	public void setId(Integer id) { this.id = id; }
 	
 	public String getEmail() { return this.email; }
 	
@@ -82,25 +60,21 @@ public class User
 	
 	public void setPassword(String password) { this.password = password; }
 	
-	public Boolean isUserStatus() { return this.userStatus; }
+	public String getDisplayName() { return this.displayName; }
 	
-	public void setUserStatus(Boolean userStatus) { this.userStatus = userStatus; }
+	public void setDisplayName(String displayName) { this.displayName = displayName; }
 	
 	public Long getLastLogin() { return this.lastLogin; }
 	
 	public void setLastLogin(Long lastLogin) { this.lastLogin = lastLogin; }
 	
-	public Integer getReservationStatus() { return this.reservationStatus; }
+	public Double getAmount() { return this.amount; }
 	
-	public void setReservationStatus(Integer reservationStatus) { this.reservationStatus = reservationStatus; }
+	public void setAmount(Double amount) { this.amount = amount; }
 	
-	public Integer getAmount() { return this.amount; }
+	public Integer getGender() { return this.gender; }
 	
-	public void setAmount(Integer amount) { this.amount = amount; }
-	
-	public String getGender() { return this.gender; }
-	
-	public void setGender(String gender) { this.gender = gender; }
+	public void setGender(Integer gender) { this.gender = gender; }
 	
 	public Integer getHeight() { return this.height; }
 	
@@ -110,7 +84,7 @@ public class User
 	
 	public void setWeight(Integer weight) { this.weight = weight; }
 	
-	public Integer getTotalTrainingHours() { return this.totalTrainingHours; }
+	public Long getRegisterTime() { return this.registerTime; }
 	
-	public void setTotalTrainingHours(Integer totalTrainingHours) { this.totalTrainingHours = totalTrainingHours; }
+	public void setRegisterTime(Long registerTime) { this.registerTime = registerTime; }
 }

@@ -6,31 +6,33 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name = "reservation")
-public class Reservation
+/**
+ * Comments for various venues that made by users
+ * 
+ * @author Giant_Salted_Fish
+ */
+@Entity(name = "venue_comment")
+public class VenueComment
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
 	
+	/**
+	 * Id of the user that sent this comment
+	 */
 	@Column(name = "user_id", nullable = false)
 	private Integer userId;
 	
 	@Column(name = "venue_id", nullable = false)
 	private Integer venueId;
 	
-	@Column(name = "make_time", nullable = false)
-	private Long makeTime;
+	@Column(name = "post_time", nullable = false)
+	private Long postTime;
 	
-	@Column(name = "start_time", nullable = false)
-	private Long startTime;
-	
-	@Column(name = "duration", nullable = false)
-	private Integer duration;
-	
-	@Column(name = "cost", nullable = false)
-	private Double cost;
+	@Column(name = "comment", nullable = false, length = 256)
+	private String comment;
 	
 	public Integer getId() { return this.id; }
 	
@@ -44,15 +46,11 @@ public class Reservation
 	
 	public void setVenueId(Integer venueId) { this.venueId = venueId; }
 	
-	public Long getStartTime() { return this.startTime; }
+	public Long getPostTime() { return this.postTime; }
 	
-	public void setStartTime(Long startTime) { this.startTime = startTime; }
+	public void setPostTime(Long postTime) { this.postTime = postTime; }
 	
-	public Integer getDuration() { return this.duration; }
+	public String getComment() { return this.comment; }
 	
-	public void setDuration(Integer duration) { this.duration = duration; }
-	
-	public Double getCost() { return this.cost; }
-	
-	public void setCost(Double cost) { this.cost = cost; }
+	public void setComment(String comment) { this.comment = comment; }
 }

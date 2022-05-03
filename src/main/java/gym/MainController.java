@@ -1,33 +1,21 @@
 package gym;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import gym.data.Activity;
-import gym.data.ActivityRepository;
-import gym.data.Employee;
-import gym.data.EmployeeRepository;
-import gym.data.Manager;
-import gym.data.ManagerRepository;
-import gym.data.Reservation;
-import gym.data.ReservationRepository;
 import gym.data.User;
 import gym.data.UserRepository;
-import gym.data.Venue;
-import gym.data.VenueRepository;
+import gym.util.R;
 
 @RestController
 public class MainController
@@ -36,492 +24,53 @@ public class MainController
 	
 	private static final int SESSION_SURVIVE_TIME = 30 * 60;
 	
-	private static final String
-		OK = "OK",
-		LOGIN_REQUIRED = "LOGIN_REQUIRED",
-		LOGOUT_REQUIRED = "LOGOUT_REQUIRED",
-		ERROR_ACCOUNT = "ERROR_ACCOUNT",
-		ERROR_PASSWORD = "ERROR_PASSWORD",
-		INSUFFICIENT_PERMISSION = "INSUFFICIENT_PERMISSION",
-		ERROR_OPERATE_TARGET = "ERROR_OPERATE_TARGET";
-	
 	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired
-	private ReservationRepository reservationRepository;
-	
-	@Autowired
-	private ActivityRepository activityRepository;
-	
-	@Autowired
-	private VenueRepository venueRepository;
-	
-	@Autowired
-	private ManagerRepository managerRepository;
-	
-	@Autowired
-	private EmployeeRepository employeeRepository;
-	
-	@GetMapping(path = "/hello")
-	public String hello() { return "Hello World!"; }
+	private UserRepository users;
 	
 	@GetMapping(path = "/debug")
-	public User createDebugUser()
+	public Object debug()
 	{
-		User u = new User();
-		u.setUsername("DEBUGGER"); // TODO
-		u.setPicture(User.DEF_PICTURE);
-		u.setEmail("debugger@email.com");
-		u.setPassword("123456");
-		u.setUserStatus(true);
-		u.setLastLogin(new Date().getTime());
-		u.setReservationStatus(User.WAITING);
-		u.setAmount(0);
-		u.setGender(User.DEF_GENDER); // TODO
-		u.setHeight(0);
-		u.setWeight(0);
-		u.setTotalTrainingHours(0);
-		
-		u = this.userRepository.save(u);
-		
-		Manager m = new Manager();
-		m.setManagerName("Supervisor");
-		m.setPosition("CEO");
-		m.setUserId(u.getUserId());
-		this.managerRepository.save(m);
-		
-		return u;
+		return R.ok("ready.");
 	}
 	
 	@PostMapping(path = "/login")
-	public String login(
+	public R login(
 		HttpServletRequest request,
-		@RequestParam String user_email,
+		@RequestParam String email,
 		@RequestParam String password
 	) {
-		// If user has already login, redirect to user page
 		HttpSession session = request.getSession();
-		session.setMaxInactiveInterval(SESSION_SURVIVE_TIME);
-		if(session.getAttribute(USER_ID) != null) return LOGOUT_REQUIRED;
+		if(session.getAttribute(USER_ID) != null)
+			return R.error("ALREADY_LOGIN");
 		
-		// Validate email and password
-		User user = this.userRepository.findByEmail(user_email);
-		if(user == null) return ERROR_ACCOUNT;
+		User user = this.users.findByEmail(email);
+		if(user == null)
+			return R.error("WRONG_ACCOUNT");
 		
-		if(!user.getPassword().equals(password)) return ERROR_PASSWORD;
-		session.setAttribute(USER_ID, user.getUserId());
+		if(!user.getPassword().equals(password))
+			return R.error("WRONG_PASSWORD");
 		
-		// Update last login time
 		user.setLastLogin(new Date().getTime());
-		this.userRepository.save(user);
+		user = this.users.save(user);
 		
-		return OK;
-	}
-	
-	@GetMapping(path = "/logout")
-	public String logout(HttpServletRequest request)
-	{
-		HttpSession session = request.getSession();
+		session.setAttribute(USER_ID, user.getId());
 		session.setMaxInactiveInterval(SESSION_SURVIVE_TIME);
-		if(session.getAttribute(USER_ID) == null) return LOGIN_REQUIRED;
-		
-		session.removeAttribute(USER_ID);
-		
-		return OK;
+		return R.ok().add("userId", Integer.toString(user.getId()));
 	}
 	
-	@PostMapping(path = "/create_account")
-	public String createAccount(
-		HttpServletRequest request,
-		@RequestParam String position,
-		@RequestParam String password,
-		@RequestParam String confirm_password,
-		@RequestParam String email
-	) {
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return LOGIN_REQUIRED;
-		
-		if(!this.ensureOperator(uid)) return INSUFFICIENT_PERMISSION;
-		
-		if(!password.equals(confirm_password)) return ERROR_PASSWORD;
-		
-		User u = new User();
-		u.setUsername("undefined"); // TODO
-		u.setPicture(User.DEF_PICTURE);
-		u.setEmail(email);
-		u.setPassword(password);
-		u.setUserStatus(true);
-		u.setLastLogin((long)0);
-		u.setReservationStatus(User.WAITING);
-		u.setAmount(0);
-		u.setGender(User.DEF_GENDER); // TODO
-		u.setHeight(0);
-		u.setWeight(0);
-		u.setTotalTrainingHours(0);
-		
-		return Integer.toString(this.userRepository.save(u).getUserId());
-	}
+//	public R updatePassword()
 	
-	@Transactional
-	@PostMapping(path = "/del_user")
-	public String delUser(
-		HttpServletRequest request,
-		@RequestParam Integer user_id
-	) {
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return LOGIN_REQUIRED;
-		
-		if(user_id == uid) return LOGOUT_REQUIRED;
-		
-		if(!this.ensureOperator(uid)) return INSUFFICIENT_PERMISSION;
-		
-		Optional<User> target = this.userRepository.findById(user_id);
-		if(!target.isPresent()) return ERROR_OPERATE_TARGET;
-		
-		// Delete all relevant data of this user
-		this.reservationRepository.deleteByUserId(user_id);
-		// TODO: delete records
-		this.userRepository.delete(target.get());
-		
-		return OK;
-	}
-	
-	@PostMapping(path = "/sort_user")
-	public List<User> sortUser(
-		HttpServletRequest request,
-		@RequestParam String type
-	) {
-		LinkedList<User> result = new LinkedList<>();
-		
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return result;
-		
-		if(!this.ensureOperator(uid)) return result;
-		
-		for(User u : this.userRepository.findAll())
-			result.add(u);
-		switch(type)
-		{
-		case "BY_TIME":
-			result.sort((u0, u1) -> (int)(u0.getLastLogin() - u1.getLastLogin()));
-			break;
-		default:;
-		}
-		
-		return result;
-	}
-	
-	@PostMapping(path = "/search_user")
-	public List<User> searchUser(
-		HttpServletRequest request,
-		@RequestParam String user_input
-	) {
-		LinkedList<User> result = new LinkedList<>();
-		
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return result;
-		
-		if(!this.ensureOperator(uid)) return result;
-		
-		for(User u : this.userRepository.findAll())
-			if(u.getUsername().contains(user_input) || u.getEmail().contains(user_input))
-				result.add(u);
-		
-		return result;
-	}
-	
-	@PostMapping(path = "/edit_reservation")
-	public String editReservation(
-		HttpServletRequest request,
-		@RequestParam Integer reservation_id,
-		@RequestParam Integer venue_id,
-		@RequestParam Long reservation_start_time,
-		@RequestParam Long reservation_end_time
-	) {
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return LOGIN_REQUIRED;
-		
-		if(!this.ensureOperator(uid)) return INSUFFICIENT_PERMISSION;
-		
-		Optional<Reservation> target = this.reservationRepository.findById(reservation_id);
-		if(!target.isPresent()) return ERROR_OPERATE_TARGET;
-		
-		Optional<Venue> v = this.venueRepository.findById(venue_id);
-		if(!v.isPresent()) return ERROR_OPERATE_TARGET;
-		
-		Reservation r = target.get();
-		r.setVenueId(venue_id);
-		r.setReservationStartTime(reservation_start_time);
-		r.setReservationEndTime(reservation_end_time);
-		this.reservationRepository.save(r);
-		
-		return OK;
-	}
-	
-	@PostMapping(path = "/edit_user_account")
-	public String editUserAccount(
-		HttpServletRequest request,
-		Integer user_id,
-		Integer reservation_status,
-		Integer amount
-	) {
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return LOGIN_REQUIRED;
-		
-		if(!this.ensureOperator(uid)) return INSUFFICIENT_PERMISSION;
-		
-		Optional<User> target = this.userRepository.findById(user_id);
-		if(!target.isPresent()) return ERROR_OPERATE_TARGET;
-		
-		User user = target.get();
-		user.setReservationStatus(reservation_status);
-		user.setAmount(amount);
-		this.userRepository.save(user);
-		
-		return OK;
-	}
-	
-	@PostMapping(path = "/add_sport")
-	public String addSport(
-		HttpServletRequest request,
-		@RequestParam String activity_name,
-		@RequestParam Integer max_venue_number,
-		@RequestParam String location
-	) {
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return LOGIN_REQUIRED;
-
-		if(!this.ensureOperator(uid)) return INSUFFICIENT_PERMISSION;
-		
-		Activity ac = new Activity();
-		ac.setActivityName(activity_name);
-		ac.setCurrentStatus(false);
-		ac.setMaxVenueNumber(max_venue_number);
-		ac.setLocation(location);
-		
-		Integer acId = this.activityRepository.save(ac).getActivityId();
-		
-		// Create corresponding venues
-		ArrayList<Venue> venues = new ArrayList<>(max_venue_number);
-		for(int i = max_venue_number; i-- > 0; )
-		{
-			Venue v = new Venue();
-			v.setActivityId(acId);
-			// TODO: set a max capacity maybe
-			
-			venues.add(v);
-		}
-		this.venueRepository.saveAll(venues);
-		
-		return Integer.toString(acId);
-	}
-	
-	@Transactional
-	@PostMapping(path = "/del_sport")
-	public String delSport(
-		HttpServletRequest request,
-		@RequestParam Integer activity_id
-	) {
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return LOGIN_REQUIRED;
-		
-		if(!this.ensureOperator(uid)) return INSUFFICIENT_PERMISSION;
-		
-		Optional<Activity> target = this.activityRepository.findById(activity_id);
-		if(!target.isPresent()) return ERROR_OPERATE_TARGET;
-		
-		this.activityRepository.delete(target.get());
-		// TODO: move activity to recycled place
-		// TODO: move all relevant venues
-		
-		return OK;
-	}
-	
-	@PostMapping(path = "/bool_sport")
-	public String boolSport(
-		HttpServletRequest request,
-		@RequestParam Integer activity_id
-	) {
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return LOGIN_REQUIRED;
-		
-		if(!this.ensureOperator(uid)) return INSUFFICIENT_PERMISSION;
-		
-		Optional<Activity> target = this.activityRepository.findById(activity_id);
-		if(!target.isPresent()) return ERROR_OPERATE_TARGET;
-		
-		Activity ac = target.get();
-		ac.setCurrentStatus(ac.getCurrentStatus());
-		this.activityRepository.save(ac);
-		
-		return OK;
-	}
-	
-	@PostMapping(path = "/edit_sport")
-	public String editSport(
-		HttpServletRequest request,
-		@RequestParam Integer activity_id,
-		@RequestParam String activity_name,
-		@RequestParam Integer max_venue_number,
-		@RequestParam String location
-	) {
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return LOGIN_REQUIRED;
-		
-		if(!this.ensureOperator(uid)) return INSUFFICIENT_PERMISSION;
-		
-		Optional<Activity> target = this.activityRepository.findById(activity_id);
-		if(!target.isPresent()) return ERROR_OPERATE_TARGET;
-		
-		Activity ac = target.get();
-		ac.setActivityName(activity_name);
-		ac.setMaxVenueNumber(max_venue_number);
-		// TODO: what is current venue number for?
-		ac.setLocation(location);
-		this.activityRepository.save(ac);
-		
-		return OK;
-	}
-	
-	@PostMapping(path = "/search_sport")
-	public List<Activity> searchSport(
-		HttpServletRequest request,
-		@RequestParam String user_input
-	) {
-		LinkedList<Activity> result = new LinkedList<>();
-		
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return result;
-		
-		if(!this.ensureOperator(uid)) return result;
-		
-		for(Activity ac : this.activityRepository.findAll())
-			if(ac.getActivityName().contains(user_input))
-				result.add(ac);
-		
-		return result;
-	}
-	
-	@PostMapping(path = "/add_venue")
-	public String addVenue(
-		HttpServletRequest request,
-		@RequestParam Integer activity_id
-	) {
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return LOGIN_REQUIRED;
-		
-		if(!this.ensureOperator(uid)) return INSUFFICIENT_PERMISSION;
-		
-		Venue v = new Venue();
-		v.setActivityId(activity_id);
-		
-		return Integer.toString(this.venueRepository.save(v).getVenueId());
-	}
-	
-	@Transactional
-	@PostMapping(path = "/del_venue")
-	public String delVenue(
-		HttpServletRequest request,
-		@RequestParam Integer venue_id
-	) {
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return LOGIN_REQUIRED;
-		
-		if(!this.ensureOperator(uid)) return INSUFFICIENT_PERMISSION;
-		
-		Optional<Venue> target = this.venueRepository.findById(venue_id);
-		if(!target.isPresent()) return ERROR_OPERATE_TARGET;
-		
-		Venue v = target.get();
-		this.venueRepository.delete(v);
-		// TODO: move this venue to a backup repository maybe
-		
-		return OK;
-	}
-	
-	@Transactional
-	@PostMapping(path = "/del_employee")
-	public String delEmployee(
-		HttpServletRequest request,
-		@RequestParam Integer employee_id
-	) {
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return LOGIN_REQUIRED;
-		
-		if(!this.ensureOperator(uid)) return INSUFFICIENT_PERMISSION;
-		
-		Optional<Employee> target = this.employeeRepository.findById(employee_id);
-		if(!target.isPresent()) return ERROR_OPERATE_TARGET;
-		
-		this.employeeRepository.delete(target.get());
-		
-		return OK;
-	}
-	
-	@PostMapping(path = "/edit_employee")
-	public String editEmployee(
-		HttpServletRequest request,
-		@RequestParam Integer employee_id,
-		@RequestParam String email,
-		@RequestParam String employee_name
-	) {
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return LOGIN_REQUIRED;
-		
-		if(!this.ensureOperator(uid)) return INSUFFICIENT_PERMISSION;
-		
-		Optional<Employee> target = this.employeeRepository.findById(employee_id);
-		if(!target.isPresent()) return ERROR_OPERATE_TARGET;
-		
-		Employee em = target.get();
-//		em.setEmail(email); // TODO: edit email of corresponding user
-		em.setEmployeeName(employee_name);
-		this.employeeRepository.save(em);
-		
-		return OK;
-	}
-	
-	@PostMapping(path = "/search_employee")
-	public List<Employee> searchEmployee(
-		HttpServletRequest request,
-		@RequestParam String user_input
-	) {
-		LinkedList<Employee> result = new LinkedList<>();
-		
-		HttpSession session = request.getSession();
-		Integer uid = (Integer)session.getAttribute(USER_ID);
-		if(uid == null) return result;
-		
-		if(!this.ensureOperator(uid)) return result;
-		
-		for(Employee e : this.employeeRepository.findAll())
-			if(e.getEmployeeName().contains(user_input))
-				result.add(e);
-		
-		return result;
-	}
-	
-	private boolean ensureOperator(Integer id)
+	private <V> V requireLogin(HttpServletRequest request, WithUser<V> task)
 	{
-		return(
-			this.employeeRepository.findByUserId(id).isPresent()
-			|| this.managerRepository.findByUserId(id).isPresent()
-		);
+		Object uid = request.getSession().getAttribute(USER_ID);
+		if(uid != null)
+			try { return task.call(this.users.findById((Integer)uid).get()); }
+			catch(Exception e) { }
+		return null;
 	}
+	
+//	private <V> V requireManage(HttpServletRequest request, Callable<V> task)
+//	{
+//		return null;
+//	}
 }

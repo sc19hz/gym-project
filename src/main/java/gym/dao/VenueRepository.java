@@ -1,6 +1,8 @@
-package gym.data;
+package gym.dao;
 
 import org.springframework.data.repository.CrudRepository;
+
+import gym.entity.Venue;
 
 /**
  * @author Giant_Salted_Fish

@@ -1,10 +1,12 @@
-package gym.data;
+package gym.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import net.bytebuddy.utility.RandomString;
 
 /**
  * Invitation code that created by manager and send to his/her employees to register as an employee

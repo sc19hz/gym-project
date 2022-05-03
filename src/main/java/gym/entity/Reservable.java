@@ -1,4 +1,4 @@
-package gym.data;
+package gym.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

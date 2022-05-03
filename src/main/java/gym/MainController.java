@@ -1,21 +1,21 @@
 package gym;
 
 import java.util.Date;
-import java.util.Optional;
-import java.util.concurrent.Callable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import gym.data.User;
-import gym.data.UserRepository;
+import gym.dao.UserRepository;
+import gym.entity.User;
 import gym.util.R;
+import net.bytebuddy.utility.RandomString;
 
 @RestController
 public class MainController
@@ -30,7 +30,33 @@ public class MainController
 	@GetMapping(path = "/debug")
 	public Object debug()
 	{
-		return R.ok("ready.");
+		String salt = RandomString.make(4);
+		User u = new User(
+			"debugger@email.com",
+			DigestUtils.md5DigestAsHex((salt + "123456").getBytes()),
+			salt,
+			"Debugger"
+		);
+		
+		u = this.users.save(u);
+		
+		return R.ok("ready.").add("userId", u.getId().toString());
+	}
+	
+	@PostMapping(path = "/regis")
+	public Object regis(
+		HttpServletRequest request,
+		@RequestParam String email,
+		@RequestParam String password,
+		@RequestParam String salt
+	) {
+//		if(
+//			email.length() > 64
+//			|| password.length() != 
+//			salt.length() != 4
+//		) return R.error();
+		
+		return R.ok();
 	}
 	
 	@PostMapping(path = "/login")
@@ -58,19 +84,4 @@ public class MainController
 		return R.ok().add("userId", Integer.toString(user.getId()));
 	}
 	
-//	public R updatePassword()
-	
-	private <V> V requireLogin(HttpServletRequest request, WithUser<V> task)
-	{
-		Object uid = request.getSession().getAttribute(USER_ID);
-		if(uid != null)
-			try { return task.call(this.users.findById((Integer)uid).get()); }
-			catch(Exception e) { }
-		return null;
-	}
-	
-//	private <V> V requireManage(HttpServletRequest request, Callable<V> task)
-//	{
-//		return null;
-//	}
 }

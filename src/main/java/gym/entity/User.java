@@ -1,4 +1,4 @@
-package gym.data;
+package gym.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,9 +9,22 @@ import javax.persistence.Id;
 @Entity(name = "user")
 public class User
 {
-	public static final String DEF_PICTURE = "?";
+	public User() { }
 	
-//	public static final String DEF_GENDER = "?";
+	public User(String email, String password, String salt, String displayName)
+	{
+		this.email = email;
+		this.password = password;
+		this.salt = salt;
+		this.displayName = displayName;
+		this.icon = "def_user_icon";
+		this.lastLogin = 0L;
+		this.amount = 0D;
+		this.gender = 1;
+		this.height = 1.75F;
+		this.weight = 60F;
+		this.registerTime = System.currentTimeMillis();
+	}
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +36,9 @@ public class User
 	
 	@Column(name = "password", nullable = false, length = 64)
 	private String password;
+	
+	@Column(name = "salt", nullable = false, length = 4)
+	private String salt;
 	
 	@Column(name = "display_name", nullable = false, length = 64)
 	private String displayName;
@@ -40,10 +56,10 @@ public class User
 	private Integer gender;
 	
 	@Column(name = "height", nullable = false)
-	private Integer height;
+	private Float height;
 	
 	@Column(name = "weight", nullable = false)
-	private Integer weight;
+	private Float weight;
 	
 	@Column(name = "register_time", nullable = false)
 	private Long registerTime;
@@ -60,9 +76,17 @@ public class User
 	
 	public void setPassword(String password) { this.password = password; }
 	
+	public String getSalt() { return this.salt; }
+	
+	public void setSalt(String salt) { this.salt = salt; }
+	
 	public String getDisplayName() { return this.displayName; }
 	
 	public void setDisplayName(String displayName) { this.displayName = displayName; }
+	
+	public String getIcon() { return this.icon; }
+	
+	public void setIcon(String icon) { this.icon = icon; }
 	
 	public Long getLastLogin() { return this.lastLogin; }
 	
@@ -76,13 +100,13 @@ public class User
 	
 	public void setGender(Integer gender) { this.gender = gender; }
 	
-	public Integer getHeight() { return this.height; }
+	public Float getHeight() { return this.height; }
 	
-	public void setHeight(Integer height) { this.height = height; }
+	public void setHeight(Float height) { this.height = height; }
 	
-	public Integer getWeight() { return this.weight; }
+	public Float getWeight() { return this.weight; }
 	
-	public void setWeight(Integer weight) { this.weight = weight; }
+	public void setWeight(Float weight) { this.weight = weight; }
 	
 	public Long getRegisterTime() { return this.registerTime; }
 	

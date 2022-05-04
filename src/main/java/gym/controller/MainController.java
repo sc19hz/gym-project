@@ -1,9 +1,4 @@
-package gym;
-
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+package gym.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
@@ -12,8 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import gym.annotation.RequireAuth;
 import gym.dao.UserRepository;
 import gym.entity.User;
+import gym.service.JwtService;
 import gym.util.R;
 import net.bytebuddy.utility.RandomString;
 
@@ -22,10 +19,15 @@ public class MainController
 {
 	private static final String USER_ID = "uid";
 	
-	private static final int SESSION_SURVIVE_TIME = 30 * 60;
+	@Autowired
+	private JwtService jwtService;
 	
 	@Autowired
 	private UserRepository users;
+	
+	@RequireAuth
+	@GetMapping(path = "/hello")
+	public Object hello() { return "Hello World!"; }
 	
 	@GetMapping(path = "/debug")
 	public Object debug()
@@ -45,43 +47,41 @@ public class MainController
 	
 	@PostMapping(path = "/regis")
 	public Object regis(
-		HttpServletRequest request,
 		@RequestParam String email,
 		@RequestParam String password,
-		@RequestParam String salt
+		@RequestParam(required = false) String name
 	) {
-//		if(
-//			email.length() > 64
-//			|| password.length() != 
-//			salt.length() != 4
-//		) return R.error();
+		if(email.isEmpty()) return R.error(400, "emailrequired");
+		
+		User u = this.users.findByEmail(email);
+		if(u != null) return R.error(400, "userregistered");
+		
+		if(password.isEmpty()) return R.error(400, "passwordrequired");
+		
+		String salt = RandomString.make(4);
+		u = this.users.save(
+			new User(
+				email,
+				DigestUtils.md5DigestAsHex((salt + "123456").getBytes()),
+				salt,
+				name == null ? "user_" + RandomString.make(8) : name
+			)
+		);
 		
 		return R.ok();
 	}
 	
 	@PostMapping(path = "/login")
-	public R login(
-		HttpServletRequest request,
+	public Object login(
 		@RequestParam String email,
 		@RequestParam String password
 	) {
-		HttpSession session = request.getSession();
-		if(session.getAttribute(USER_ID) != null)
-			return R.error("ALREADY_LOGIN");
+		User u = this.users.findByEmail(email);
+		if(u == null) return R.error(400, "usernotfound");
 		
-		User user = this.users.findByEmail(email);
-		if(user == null)
-			return R.error("WRONG_ACCOUNT");
+		if(!DigestUtils.md5DigestAsHex((u.getSalt() + password).getBytes()).equals(u.getPassword()))
+			return R.error(400, "wrongpassword");
 		
-		if(!user.getPassword().equals(password))
-			return R.error("WRONG_PASSWORD");
-		
-		user.setLastLogin(new Date().getTime());
-		user = this.users.save(user);
-		
-		session.setAttribute(USER_ID, user.getId());
-		session.setMaxInactiveInterval(SESSION_SURVIVE_TIME);
-		return R.ok().add("userId", Integer.toString(user.getId()));
+		return R.ok().add("token", this.jwtService.genToken(u.getId()));
 	}
-	
 }

@@ -16,7 +16,7 @@ public class R extends TreeMap<String, Object>
 	
 	public static R ok() { return ok("OK"); }
 	
-	public static R ok(String msg) { return raw().add(CODE, 0).add(MESSAGE, msg); }
+	public static R ok(String msg) { return raw().add(CODE, 200).add(MESSAGE, msg); }
 	
 	public static R error() { return error("An unexpected error has occurred :("); }
 	

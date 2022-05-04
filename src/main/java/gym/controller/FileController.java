@@ -1,3 +1,4 @@
+package gym.controller;
 //package gym;
 //
 //import org.springframework.stereotype.Controller;

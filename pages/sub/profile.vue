@@ -47,7 +47,7 @@
 	export default {
 		data() {
 			return {
-				userIcon: "http://127.0.0.1:8080/image/usericon/Ellipse.png",
+				userIcon: '',
 				displayName: '',
 				
 				gender: 0,
@@ -67,6 +67,7 @@
 			this.gender = Number(params.gender)
 			this.weight = params.weight + "kg"
 			this.height = params.height * 100 + "cm"
+			this.userIcon = params.icon
 		},
 		
 		methods: {

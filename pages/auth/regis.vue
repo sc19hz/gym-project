@@ -71,7 +71,7 @@
 				{
 					// Primary check pass, do register request
 					uni.$u.http.post(
-						'/regis', { }, { params: { displayName: this.displayName, email: this.email, password: this.password } },
+						'/regis', { }, { params: { displayName: this.displayName, email: this.email, password: this.password } }
 					).then(
 						res => {
 							let {data} = res

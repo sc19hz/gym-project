@@ -13,7 +13,9 @@
 		<u-row @click="gotoProfile">
 			<u-col span="11">
 				<u-row>
-					<u--image :showLoading="true" shape="circle" width="120rpx" height="120rpx" src="../../static/icon/account.png"></u--image>
+					<view class="icon-container">
+						<image class="icon" src="../../static/icon/account.png"></image>
+					</view>
 					<text>Account</text>
 				</u-row>
 			</u-col>
@@ -25,7 +27,9 @@
 		<u-row @click="gotoWallet">
 			<u-col span="11">
 				<u-row>
-					<u--image :showLoading="true" shape="circle" width="120rpx" height="120rpx" src="../../static/icon/wallet.png"></u--image>
+					<view class="icon-container">
+						<image class="icon" src="../../static/icon/wallet.png"></image>
+					</view>
 					<text>Wallet</text>
 				</u-row>
 			</u-col>
@@ -37,7 +41,9 @@
 		<u-row>
 			<u-col span="11">
 				<u-row>
-					<u--image :showLoading="true" shape="circle" width="120rpx" height="120rpx" src="../../static/icon/security.png"></u--image>
+					<view class="icon-container">
+						<image class="icon" src="../../static/icon/security.png"></image>
+					</view>
 					<text>Security</text>
 				</u-row>
 			</u-col>
@@ -49,7 +55,9 @@
 		<u-row @click="logout">
 			<u-col span="11">
 				<u-row>
-					<u--image :showLoading="true" shape="circle" width="120rpx" height="120rpx" src="../../static/icon/logout.png"></u--image>
+					<view class="icon-container">
+						<image class="icon" src="../../static/icon/logout.png"></image>
+					</view>
 					<text>Logout</text>
 				</u-row>
 			</u-col>
@@ -66,7 +74,7 @@
 	export default {
 		data() {
 			return {
-				userIcon: "http://127.0.0.1:8080/image/usericon/Ellipse.png",
+				userIcon: "",
 				displayName: "Adline Castelino",
 				
 				user: { }
@@ -82,7 +90,9 @@
 			uni.$u.http.post('self').then(
 				res => {
 					this.user = res.data;
+					
 					this.displayName = this.user.displayName
+					this.userIcon = this.user.icon
 				}
 			)
 		},
@@ -96,7 +106,8 @@
 						name: this.displayName,
 						weight: this.user.weight,
 						height: this.user.height,
-						gender: this.user.gender
+						gender: this.user.gender,
+						icon: this.userIcon
 					}
 				})
 			},
@@ -126,6 +137,18 @@
 </script>
 
 <style lang="scss" scoped>
+	.icon-container {
+		height: 120rpx;
+		width: 120rpx;
+		
+		.icon {
+			height: 50rpx;
+			width: 50rpx;
+			margin-top: 35rpx;
+			margin-left: 35rpx;
+		}
+	}
+	
 	.divisor {
 		margin: 0;
 	}

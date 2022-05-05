@@ -2,7 +2,7 @@
 	<view style="width: 80vw; padding-left: 10vw;">
 	    <view class="promote-0">Find your</view>
 		<view class="promote-1">Activity</view>
-		<u-row>
+		<u-row customStyle="margin-bottom: 30rpx">
 			<u-col span="6">
 				<u-tabs lineColor="#000" :list="sortTabs"></u-tabs>
 			</u-col>
@@ -10,7 +10,19 @@
 				<u-search placeholder="search" v-model="searchKey" :showAction="false" height="50rpx"></u-search>
 			</u-col>
 		</u-row>
-		<image class="entry"></image>
+		<view class="entry" v-for="(item, index) in activities" :key="item.id" @click="gotoDetails(item.id)">
+			<u-row>
+				<image mode="aspectFill" class="entry-img" :src="item.icon"></image>
+			</u-row>
+			<u-row class="entry-des">
+				<u-col span="8">
+					<text class="u-line-1" style="font-weight: bold;">{{ item.displayName }}</text>
+				</u-col>
+				<u-col class="people" span="4">
+					<view class="u-line-1" style="text-align: right;">0/20</view>
+				</u-col>
+			</u-row>
+		</view>
 	</view>
 </template>
 
@@ -24,19 +36,33 @@
 					{ name: 'Popular' },
 					{ name: 'ALL' },
 				],
+				
+				curPage: 0,
+				
+				activities: [
+					
+				]
 			};
 		},
 		
+		onShow() {
+		},
+		
 		onLoad() {
-			// // Check if token present
-			// if(uni.getStorageSync("token").length == 0)
-			// {
-			// 	console.log("token not present");
-			// 	uni.$u.route({
-			// 		url: "pages/index/index",
-			// 		type: "reLaunch"
-			// 	})
-			// }
+			uni.$u.http.post(
+				"/home",
+				{ },
+				{
+					params: {
+						pageNum: this.curPage,
+						pageSize: 5
+					}
+				},
+			).then(
+				res => {
+					this.activities = res.data
+				}
+			)
 		},
 		
 		methods: {
@@ -50,6 +76,16 @@
 			
 			gotoRegis() {
 				uni.$u.route('pages/auth/regis')
+			},
+			
+			gotoDetails(venueId) {
+				uni.$u.route({
+					url: "pages/sub/venue-detail",
+					type: "to",
+					params: {
+						id: venueId
+					}
+				})
 			}
 		},
 	}
@@ -57,7 +93,26 @@
 
 <style lang="scss" scoped>
 	.entry {
+		box-shadow: 0 10rpx 10rpx #bbb;
 		border-radius: 30rpx;
+		margin-bottom: 30rpx;
+		
+		.entry-des {
+			color: #333;
+			font-size: 26rpx;
+			height: 8vw;
+			border-bottom-left-radius: 30rpx;
+			border-bottom-right-radius: 30rpx;
+			margin-left: 20rpx;
+			margin-right: 20rpx;
+		}
+		
+		.entry-img {
+			border-top-left-radius: 30rpx;
+			border-top-right-radius: 30rpx;
+			width: 80vw;
+			height: 40vw;
+		}
 	}
 	
 	.promote-0 {
@@ -68,6 +123,6 @@
 	.promote-1 {
 		font-weight: bold;
 		font-size: 70rpx;
-		margin-bottom: 30rpx;
+		margin-bottom: 50rpx;
 	}
 </style>

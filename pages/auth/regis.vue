@@ -1,5 +1,5 @@
 <template>
-	<view style="width: 80vw; padding-left: 10vw;">
+	<view style="width: 80vw; margin-left: 10vw;">
 		<view class="title">Sign Up</view>
 		<u--form>
 			<u-form-item class="input-field">
@@ -61,42 +61,51 @@
 				this.flag = !this.email || !this.password || !this.confirmPassword || !this.agree
 			},
 			
-			onRegis() {
+			async onRegis() {
 				let msg = 'Unexpected error'
-				if(!this.$u.test.email(this.email))
-					msg = "Invalid email format, please check and retry!"
-				if(this.password != this.confirmPassword)
-					msg = "Wrong confirmed password, please check and retry!"
-				else
+				switch(true)
 				{
+				default:
+					if(!this.$u.test.email(this.email))
+					{
+						msg = "Invalid email format, please check and retry!";
+						break;
+					}
+					
+					if(this.password != this.confirmPassword)
+					{
+						msg = "Wrong confirmed password, please check and retry!";
+						break;
+					}
+					
 					// Primary check pass, do register request
-					uni.$u.http.post(
+					let data = await uni.$u.http.post(
 						'/regis', { }, { params: { displayName: this.displayName, email: this.email, password: this.password } }
-					).then(
-						res => {
-							let {data} = res
-							console.log(data);
-							
-							uni.$u.http.post(
-								'/login', { }, { params: { email: this.email, password: this.password } },
-							).then(
-								res => {
-									let {data} = res
-									console.log(data);
-								
-									// Save token to local storage
-									uni.setStorageSync("token", data.token)
-									console.log("token saved");
-							
-									// Jump to home page
-									uni.$u.route({
-										url: "pages/index/home",
-										type: "reLaunch"
-									})
-								}
-							)
-						}
-					)
+					);
+					
+					if(data.status != 200)
+					{
+						msg = data.message;
+						break;
+					}
+					
+					console.log(data);
+					
+					data = await uni.$u.http.post(
+						'/login', { }, { params: { email: this.email, password: this.password } },
+					);
+					
+					console.log(data);
+					
+					// Save token to local storage
+					uni.setStorageSync("token", data.token)
+			
+					// Jump to home page
+					uni.$u.route({
+						url: "pages/index/home",
+						type: "reLaunch"
+					})
+					return;
 				}
 				
 				// Something goes wrong, redirect to this page and show error message

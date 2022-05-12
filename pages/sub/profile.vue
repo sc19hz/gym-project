@@ -1,5 +1,5 @@
 <template>
-	<view style="width: 80vw; padding-left: 10vw;">
+	<view style="width: 80vw; margin-left: 10vw;">
 		<u-row customStyle="margin-bottom: 10px" justify="center">
 			<u--image class="user-icon" :showLoading="true" shape="circle" width="200rpx" height="200rpx" :src="userIcon"></u--image>
 		</u-row>
@@ -37,7 +37,7 @@
 			</u-form-item>
 			
 			<u-form-item class="confirm-button">
-				<u-button class="button" :disabled="disabled" @click="confirm()" text="Update!" type="warning"></u-button>
+				<u-button class="button" :disabled="disabled" @click="confirm()" text="Update Profile" type="warning"></u-button>
 			</u-form-item>
 		</u--form>
 	</view>
@@ -103,10 +103,10 @@
 					this.height = this.prevHeight
 			},
 			
-			confirm() {
+			async confirm() {
 				let reg = /[0-9]+(\.[0-9]+)?/
 				
-				uni.$u.http.post(
+				await uni.$u.http.post(
 					'/user/update-profile',
 					{ },
 					{
@@ -117,11 +117,9 @@
 							gender: this.gender + ""
 						},
 					}
-				).then(
-					res => {
-						uni.$u.route({ type: "back" })
-					}
-				)
+				);
+				
+				uni.$u.route({ type: "back" });
 			}
 		}
 	}

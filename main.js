@@ -48,6 +48,39 @@ uni.$u.http.interceptors.request.use(config => { // 可使用async await 做异�
 	return config
 })
 
+// 响应拦截器
+uni.$u.http.interceptors.response.use(
+	response => {
+		/* 对响应成功做点什么 可使用async await 做异步操作*/
+		// if (response.data.code !== 200) { // 服务端返回的状态码不等于200，则reject()
+		//    	return Promise.reject(response) // return Promise.reject 可使promise状态进入catch
+		// if (response.config.custom.verification) { // 演示自定义参数的作用
+		//   	return response.data
+		// }
+		
+		// Switch status code
+		let {data} = response
+		switch(data.status)
+		{
+		case 401:
+			// Token has expired, redirect to login page
+			uni.$u.route({
+				url: "pages/auth/login",
+				type: "redirect",
+				params: {
+					tokenExpire: data.message
+				}
+			})
+			break
+		default:
+			return data
+		}
+		
+		// Reject the promise if handled in 'case'
+		return Promise.reject(response)
+	}
+)
+
 uni.$u.http.setConfig((config) => {
     /* config 为默认全局配置*/
     config.baseURL = 'http://127.0.0.1:8080'; /* 根域名 */

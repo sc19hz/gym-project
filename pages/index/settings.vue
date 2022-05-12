@@ -1,22 +1,21 @@
 <template>
 	<view>
-		<u-toast ref="uToast"></u-toast>
-		
 		<u-row customStyle="margin-bottom: 10px" justify="center">
 			<u--image class="user-icon" :showLoading="true" shape="circle" width="200rpx" height="200rpx" :src="userIcon"></u--image>
 		</u-row>
 		<u-row customStyle="margin-bottom: 10px" justify="center">
 			<view class="user-name">{{ displayName }}</view>
-			<u-icon :name="user.gender ? 'man' : 'woman'" :color="user.gender ? '#2979ff' : '#ff5577'"></u-icon>
+			<u-icon :name="user.gender ? 'man' : 'woman'" :color="user.gender ? '#2979ff' : '#ff5577'" size="34rpx"></u-icon>
 		</u-row>
 		<u-divider customStyle="margin-bottom: 0;"></u-divider>
-		<u-row @click="gotoProfile">
+		
+		<u-row @click="gotoReservations">
 			<u-col span="11">
 				<u-row>
 					<view class="icon-container">
-						<image class="icon" src="../../static/icon/account.png"></image>
+						<image class="icon" src="../../static/icon/record.png"></image>
 					</view>
-					<text>Account</text>
+					<text>Reservations</text>
 				</u-row>
 			</u-col>
 			<u-col span="1">
@@ -24,6 +23,22 @@
 			</u-col>
 		</u-row>
 		<u-divider class="divisor"></u-divider>
+		
+		<u-row @click="gotoProfile">
+			<u-col span="11">
+				<u-row>
+					<view class="icon-container">
+						<image class="icon" src="../../static/icon/profile.png"></image>
+					</view>
+					<text>Profile</text>
+				</u-row>
+			</u-col>
+			<u-col span="1">
+				<u-icon name="arrow-right"></u-icon>
+			</u-col>
+		</u-row>
+		<u-divider class="divisor"></u-divider>
+		
 		<u-row @click="gotoWallet">
 			<u-col span="11">
 				<u-row>
@@ -38,6 +53,7 @@
 			</u-col>
 		</u-row>
 		<u-divider class="divisor"></u-divider>
+		
 		<u-row>
 			<u-col span="11">
 				<u-row>
@@ -52,6 +68,7 @@
 			</u-col>
 		</u-row>
 		<u-divider class="divisor"></u-divider>
+		
 		<u-row @click="logout">
 			<u-col span="11">
 				<u-row>
@@ -67,6 +84,7 @@
 		</u-row>
 		<u-divider class="divisor"></u-divider>
 		
+		<view style="height: 120rpx;"></view>
 	</view>
 </template>
 
@@ -75,7 +93,7 @@
 		data() {
 			return {
 				userIcon: "",
-				displayName: "Adline Castelino",
+				displayName: "???",
 				
 				user: { }
 			}
@@ -85,19 +103,22 @@
 			
 		},
 		
-		onShow(params) {
+		async onShow(params) {
 			// Obtain user's data
-			uni.$u.http.post('self').then(
-				res => {
-					this.user = res.data;
-					
-					this.displayName = this.user.displayName
-					this.userIcon = this.user.icon
-				}
-			)
+			let data = await uni.$u.http.post('self');
+			this.user = data;
+			this.displayName = data.displayName;
+			this.userIcon = data.icon;
 		},
 		
 		methods: {
+			gotoReservations() {
+				uni.$u.route({
+					url: "pages/sub/reservation",
+					type: "to"
+				})
+			},
+			
 			gotoProfile() {
 				uni.$u.route({
 					url: "pages/sub/profile",
@@ -122,15 +143,18 @@
 			logout() {
 				uni.removeStorageSync("token");
 				
-				this.$refs.uToast.show({
-					message: "Successfully logout!",
-					complete() {
-						uni.$u.route({
-							url: "pages/index/index",
-							type: "reLaunch"
-						})
-					}
+				uni.showToast({
+					title: "Successfully logout!",
+					duration: 1000
 				})
+				
+				setTimeout(
+					() => uni.$u.route({
+						url: "pages/index/index",
+						type: "reLaunch",
+					}),
+					1000
+				);
 			}
 		}
 	}
@@ -161,7 +185,7 @@
 	
 	.user-name {
 		font-weight: bold;
-		font-size: 30rpx;
-		color: #555;
+		font-size: 34rpx;
+		color: #777;
 	}
 </style>

@@ -1,5 +1,5 @@
 <template>
-	<view style="width: 80vw; padding-left: 10vw;">
+	<view style="width: 80vw; margin-left: 10vw;">
 	    <view class="promote-0">Find your</view>
 		<view class="promote-1">Activity</view>
 		<u-row customStyle="margin-bottom: 30rpx">
@@ -10,7 +10,7 @@
 				<u-search placeholder="search" v-model="searchKey" :showAction="false" height="50rpx"></u-search>
 			</u-col>
 		</u-row>
-		<view class="entry" v-for="(item, index) in activities" :key="item.id" @click="gotoDetails(item.id)">
+		<view class="entry" v-for="(item, index) in venues" :key="item.id" @click="gotoDetails(item.id)">
 			<u-row>
 				<image mode="aspectFill" class="entry-img" :src="item.icon"></image>
 			</u-row>
@@ -23,6 +23,7 @@
 				</u-col>
 			</u-row>
 		</view>
+		<view style="height: 120rpx;"></view>
 	</view>
 </template>
 
@@ -39,17 +40,14 @@
 				
 				curPage: 0,
 				
-				activities: [
+				venues: [
 					
 				]
 			};
 		},
 		
-		onShow() {
-		},
-		
-		onLoad() {
-			uni.$u.http.post(
+		async onLoad() {
+			this.venues = await uni.$u.http.post(
 				"/home",
 				{ },
 				{
@@ -58,11 +56,7 @@
 						pageSize: 5
 					}
 				},
-			).then(
-				res => {
-					this.activities = res.data
-				}
-			)
+			);
 		},
 		
 		methods: {

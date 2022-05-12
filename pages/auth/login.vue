@@ -1,5 +1,7 @@
 <template>
-	<view style="width: 80vw; padding-left: 10vw;">
+	<view style="width: 80vw; margin-left: 10vw;">
+		<u-notify ref="uNotify"></u-notify>
+		
 		<view class="title">Login</view>
 		<u--form>
 			<u-form-item class="input-field">
@@ -36,11 +38,31 @@ export default {
 			password: "",
 			
 			errMsg: "",
+			tokenExpire: ''
 		};
 	},
 	
 	onLoad(params) {
 		this.errMsg = params.errMsg ?? ''
+		this.tokenExpire = params.tokenExpire ?? ''
+	},
+	
+	onReady() {
+		// Show a promote message if token has expired
+		if(this.tokenExpire != '')
+		{
+			this.$refs.uNotify.show({
+			    top: '80rpx',
+			    type: 'warning',
+			    message: this.tokenExpire,
+				
+				// Keep it for 5 sec
+			    duration: 1000 * 5,
+				
+			    fontSize: '30rpx',
+			    safeAreaInsetTop:true
+			})
+		}
 	},
 	
 	methods: {
@@ -48,32 +70,38 @@ export default {
 			this.flag = !this.email || !this.password
 		},
 		
-		onLogin() {
+		async onLogin() {
 			let msg = 'Unexpected error';
-			if(!this.$u.test.email(this.email))
-				msg = "Invalid email format, please check and retry!"
-			else
+			switch(1)
 			{
-				// console.log("try login with email <" + this.email + ">, password <" + this.password + ">")
+			default:
+				if(!this.$u.test.email(this.email))
+				{
+					msg = "Invalid email format, please check and retry!";
+					break;
+				}
 				
-				uni.$u.http.post(
+				let data = await uni.$u.http.post(
 					'/login', { }, { params: { email: this.email, password: this.password } },
-				).then(
-					res => {
-						let {data} = res
-						console.log(data);
-					
-						// Save token to local storage
-						uni.setStorageSync("token", data.token)
-						console.log("token saved");
+				);
 				
-						// Jump to home page
-						uni.$u.route({
-							url: "pages/index/home",
-							type: "reLaunch"
-						})
-					}
-				)
+				console.log(data);
+				
+				if(data.status != 200)
+				{
+					msg = data.message;
+					break;
+				}
+				
+				// Save token to local storage
+				uni.setStorageSync("token", data.token)
+				
+				// Jump to home page
+				uni.$u.route({
+					url: "pages/index/home",
+					type: "reLaunch"
+				})
+				return;
 			}
 			
 			// Something goes wrong, redirect to this page and show error message
@@ -83,7 +111,7 @@ export default {
 				params: {
 					errMsg: msg
 				}
-			})
+			});
 		},
 		
 		onRegis() {

@@ -22,28 +22,28 @@ public class TimeBlock
 	@Column(name = "venue_id", nullable = false)
 	private Integer venueId;
 	
-	/**
-	 * <pre>
-	 * 0 = specified in year
-	 * 1 = specified in month
-	 * 2 = specified in week
-	 * 3 = specified in day
-	 * </pre>
-	 */
-	@Column(name = "type", nullable = false)
-	private Integer type;
-	
 	@Column(name = "start_time", nullable = false)
 	private Integer startTime;
 	
-	@Column(name = "duration", nullable = false)
-	private Integer duration;
+	@Column(name = "end_time", nullable = false)
+	private Integer endTime;
 	
 	@Column(name = "fee", nullable = false)
 	private Double fee;
 	
 	@Column(name = "vip_fee", nullable = false)
 	private Double vipFee;
+	
+	public TimeBlock() { }
+	
+	public TimeBlock(Integer venueId, Integer startTime, Integer endTime, Double fee)
+	{
+		this.venueId = venueId;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.fee = fee;
+		this.vipFee = fee;
+	}
 	
 	public Integer getId() { return this.id; }
 	
@@ -53,17 +53,13 @@ public class TimeBlock
 	
 	public void setVenueId(Integer venueId) { this.venueId = venueId; }
 	
-	public Integer getType() { return this.type; }
-	
-	public void setType(Integer type) { this.type = type; }
-	
 	public Integer getStartTime() { return this.startTime; }
 	
 	public void setStartTime(Integer startTime) { this.startTime = startTime; }
 	
-	public Integer getDuration() { return this.duration; }
+	public Integer getEndTime() { return this.endTime; }
 	
-	public void setDuration(Integer duration) { this.duration = duration; }
+	public void setEndTime(Integer endTime) { this.endTime = endTime; }
 	
 	public Double getFee() { return this.fee; }
 	

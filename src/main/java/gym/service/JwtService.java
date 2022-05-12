@@ -2,6 +2,8 @@ package gym.service;
 
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +32,17 @@ public class JwtService
 			.compact();
 	}
 	
-	/**
-	 * @param token Token to validate
-	 * @return User id saved in payload if this token is valid and not expired
-	 */
-	public Integer validateToken(String token)
+	public Integer getUserId(HttpServletRequest request)
 	{
-		Claims claims = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
+		// Jwt parse function will check expire time for us!
+		return Integer.parseInt(this.getClaims(request).getAudience());
+	}
+	
+	public Claims getClaims(HttpServletRequest request) {
 		return(
-			claims.getExpiration().getTime() > System.currentTimeMillis()
-			? Integer.parseInt(claims.getAudience())
-			: null
+			Jwts.parser().setSigningKey(this.secret).parseClaimsJws(
+				request.getHeader("Authorization").substring("Bearer ".length())
+			).getBody()
 		);
 	}
 }

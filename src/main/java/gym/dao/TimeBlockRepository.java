@@ -1,5 +1,7 @@
 package gym.dao;
 
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 
 import gym.entity.TimeBlock;
@@ -9,5 +11,5 @@ import gym.entity.TimeBlock;
  */
 public interface TimeBlockRepository extends CrudRepository<TimeBlock, Integer>
 {
-
+	public List<TimeBlock> findByVenueId(Integer venueId);
 }

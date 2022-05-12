@@ -28,6 +28,12 @@ public class Reservable
 	@Column(name = "display_name", nullable = false, length = 64)
 	private String displayName;
 	
+	/**
+	 * An image to display the actual position of the reservable
+	 */
+//	@Column(name = "image", length = 256)
+//	private String image;
+	
 	public Integer getId() { return this.id; }
 	
 	public void setId(Integer id) { this.id = id; }

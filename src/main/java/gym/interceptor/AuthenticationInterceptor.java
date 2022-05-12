@@ -43,20 +43,14 @@ public class AuthenticationInterceptor implements HandlerInterceptor
 		if(!method.isAnnotationPresent(RequireAuth.class)) return true;
 		
 		// Do authentication before actually engage the handler
-		Integer uid = this.jwtService.validateToken(
-			request.getHeader("Authorization").substring("Bearer ".length())
-		);
-		if(
-			uid == null
-			|| (
-				method.isAnnotationPresent(ManagerAuth.class)
-				&& this.employees.findByUserId(uid) == null
-				&& this.managers.findByUserId(uid) == null
+		Integer uid = this.jwtService.getUserId(request);
+		return(
+			uid != null
+			&& (
+				!method.isAnnotationPresent(ManagerAuth.class)
+				|| this.employees.findByUserId(uid) != null
+				|| this.managers.findByUserId(uid) != null
 			)
-		) return false;
-		
-		// Validation pass, save user id into session for later use
-		request.getSession().setAttribute("uid", uid);
-		return true;
+		);
 	}
 }

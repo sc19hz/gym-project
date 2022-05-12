@@ -9,23 +9,6 @@ import javax.persistence.Id;
 @Entity(name = "user")
 public class User
 {
-	public User() { }
-	
-	public User(String email, String password, String salt, String displayName)
-	{
-		this.email = email;
-		this.password = password;
-		this.salt = salt;
-		this.displayName = displayName;
-		this.icon = "def_user_icon";
-		this.lastLogin = 0L;
-		this.amount = 0D;
-		this.gender = 1;
-		this.height = 1.75F;
-		this.weight = 60F;
-		this.registerTime = System.currentTimeMillis();
-	}
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -63,6 +46,23 @@ public class User
 	
 	@Column(name = "register_time", nullable = false)
 	private Long registerTime;
+	
+	public User() { }
+	
+	public User(String email, String password, String salt, String displayName, String defIcon)
+	{
+		this.email = email;
+		this.password = password;
+		this.salt = salt;
+		this.displayName = displayName;
+		this.icon = defIcon;
+		this.lastLogin = 0L;
+		this.amount = 0D;
+		this.gender = 0;
+		this.height = 1.75F;
+		this.weight = 60F;
+		this.registerTime = System.currentTimeMillis();
+	}
 	
 	public Integer getId() { return this.id; }
 	

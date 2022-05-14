@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import gym.annotation.EmployeeAuth;
 import gym.annotation.ManagerAuth;
 import gym.annotation.RequireAuth;
 import gym.dao.EmployeeRepository;
@@ -44,13 +45,18 @@ public class AuthenticationInterceptor implements HandlerInterceptor
 		
 		// Do authentication before actually engage the handler
 		Integer uid = this.jwtService.getUserId(request);
-		return(
-			uid != null
-			&& (
-				!method.isAnnotationPresent(ManagerAuth.class)
-				|| this.employees.findByUserId(uid) != null
-				|| this.managers.findByUserId(uid) != null
-			)
+		int authType =(
+			method.isAnnotationPresent(EmployeeAuth.class)
+			? 1
+			: method.isAnnotationPresent(ManagerAuth.class) ? 2 : 0
 		);
+		
+		if(authType == 0)
+			return true;
+		
+		boolean isEmployee = this.employees.findByUserId(uid) != null;
+		boolean isManager = this.managers.findByUserId(uid) != null;
+		
+		return isManager || (authType == 1 && isEmployee); 
 	}
 }

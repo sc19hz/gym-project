@@ -14,6 +14,9 @@ public class Venue
 	@Column(name = "id")
 	private Integer id;
 	
+	@Column(name = "manager_id", nullable = false)
+	private Integer managerId;
+	
 	@Column(name = "activity_id", nullable = false)
 	private Integer activityId;
 	
@@ -63,6 +66,14 @@ public class Venue
 	public Integer getId() { return this.id; }
 	
 	public void setId(Integer id) { this.id = id; }
+	
+	public Integer getManagerId() { return this.managerId; }
+	
+	public void setManagerId(Integer managerId) { this.managerId = managerId; }
+	
+	public Integer getActivityId() { return this.activityId; }
+	
+	public void setActivityId(Integer activityId) { this.activityId = activityId; }
 	
 	public String getDisplayName() { return this.displayName; }
 	

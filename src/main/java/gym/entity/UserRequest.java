@@ -6,8 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name = "employee")
-public class Employee
+@Entity(name = "user_request")
+public class UserRequest
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,12 +20,23 @@ public class Employee
 	@Column(name = "manager_id", nullable = false)
 	private Integer managerId;
 	
-	public Employee() { }
+	@Column(name = "reservation_id", nullable = false)
+	private Integer reservationId;
 	
-	public Employee(Integer userId, Integer managerId)
-	{
+	@Column(name = "description", nullable = false, length = 256)
+	private String description;
+	
+	@Column(name = "make_time", nullable = false)
+	private Long makeTime;
+	
+	public UserRequest() { }
+	
+	public UserRequest(Integer userId, Integer managerId, Integer reservationId) {
 		this.userId = userId;
 		this.managerId = managerId;
+		this.reservationId = reservationId;
+		this.description = "Not provide";
+		this.makeTime = System.currentTimeMillis();
 	}
 	
 	public Integer getId() { return this.id; }
@@ -39,4 +50,12 @@ public class Employee
 	public Integer getManagerId() { return this.managerId; }
 	
 	public void setManagerId(Integer managerId) { this.managerId = managerId; }
+	
+	public Integer getReservationId() { return this.reservationId; }
+	
+	public void setReservationId(Integer reservationId) { this.reservationId = reservationId; }
+	
+	public String getDescription() { return this.description; }
+	
+	public void setDescription(String description) { this.description = description; }
 }

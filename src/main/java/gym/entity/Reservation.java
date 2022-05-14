@@ -38,6 +38,13 @@ public class Reservation
 	@Column(name = "cost", nullable = false)
 	private Double cost;
 	
+	/**
+	 * <pre>
+	 * 0 = waiting
+	 * 1 = complete
+	 * 2 = canceled
+	 * </pre>
+	 */
 	@Column(name = "status", nullable = false)
 	private Integer status;
 	

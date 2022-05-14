@@ -12,4 +12,6 @@ import gym.entity.TimeBlock;
 public interface TimeBlockRepository extends CrudRepository<TimeBlock, Integer>
 {
 	public List<TimeBlock> findByVenueId(Integer venueId);
+
+	public void deleteByVenueId(Integer venueId);
 }

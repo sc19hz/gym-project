@@ -18,4 +18,6 @@ public interface ReservationRepository extends CrudRepository<Reservation, Integ
 	);
 	
 	public List<Reservation> findByUserId(Integer userId);
+	
+	public List<Reservation> findByVenueId(Integer venueId);
 }

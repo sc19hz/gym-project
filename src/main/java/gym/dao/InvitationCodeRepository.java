@@ -9,5 +9,5 @@ import gym.entity.InvitationCode;
  */
 public interface InvitationCodeRepository extends CrudRepository<InvitationCode, Integer>
 {
-
+	public InvitationCode findByCode(String code);
 }

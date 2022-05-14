@@ -24,12 +24,14 @@ import gym.dao.ReservationRepository;
 import gym.dao.TimeBlockRepository;
 import gym.dao.TopupRecordRepository;
 import gym.dao.UserRepository;
+import gym.dao.UserRequestRepository;
 import gym.dao.VenueRepository;
 import gym.entity.Manager;
 import gym.entity.Reservation;
 import gym.entity.TimeBlock;
 import gym.entity.TopupRecord;
 import gym.entity.User;
+import gym.entity.UserRequest;
 import gym.entity.Venue;
 import gym.service.JwtService;
 import gym.util.R;
@@ -65,6 +67,9 @@ public class UserController
 	
 	@Autowired
 	private TopupRecordRepository topupRecords;
+	
+	@Autowired
+	private UserRequestRepository userRequests;
 	
 	@GetMapping(path = "/hello")
 	public Object hello() { return "Hello World!"; }
@@ -374,6 +379,24 @@ public class UserController
 	@PostMapping(path = "/top-up-records")
 	public Object topupRecords(HttpServletRequest request) {
 		return this.topupRecords.findByUserId(this.jwtService.getUserId(request));
+	}
+	
+	@RequireAuth
+	@PostMapping(path = "/cancel-request")
+	public Object cancelRequest(
+		HttpServletRequest request,
+		@RequestParam int reservationId
+	) {
+		this.userRequests.save(
+			new UserRequest(
+				this.jwtService.getUserId(request),
+				this.venues.findById(
+					this.reservations.findById(reservationId).get().getVenueId()
+				).get().getManagerId(),
+				reservationId
+			)
+		);
+		return R.ok();
 	}
 	
 //	public Object venueDetails(@RequestParam int venueId)

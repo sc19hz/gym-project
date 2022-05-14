@@ -10,4 +10,4 @@ INSERT INTO activity (name) VALUES ('Swim');
 INSERT INTO activity (name) VALUES ('Tennis');
 INSERT INTO activity (name) VALUES ('Other');
 
-ALTER TABLE venue ADD activity_id INT NOT NULL DEFAULT 0 AFTER id;
+ALTER TABLE venue ADD activity_id INT NOT NULL DEFAULT 1 AFTER id;

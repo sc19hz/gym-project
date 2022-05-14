@@ -5,3 +5,7 @@ CREATE TABLE topup_record(
 	amount DOUBLE NOT NULL,
 	paid DOUBLE NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE venue ADD manager_id INT NOT NULL DEFAULT 1 AFTER id;
+ALTER TABLE employee ADD manager_id INT NOT NULL DEFAULT 1 AFTER user_id;
+ALTER TABLE invitation_code ADD manager_id INT NOT NULL DEFAULT 1 AFTER code;

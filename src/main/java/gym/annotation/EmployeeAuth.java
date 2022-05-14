@@ -8,4 +8,4 @@ import java.lang.annotation.Target;
 @RequireAuth
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ManagerAuth { }
+public @interface EmployeeAuth { }

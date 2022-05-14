@@ -69,15 +69,29 @@
 		},
 		
 		methods: {
-			confirmCancel() {
+			async confirmCancel() {
 				this.showCancel = false;
 				
-				// TODO: send request
+				let res = await uni.$u.http.post(
+					"/cancel-request",
+					{ },
+					{
+						params: {
+							reservationId: this.reservation.id
+						}
+					},
+				);
 				
-				uni.showToast({
-					title: "Request has been sent out!",
+				if(res.status == 200)
+					uni.showToast({
+						title: "Request has been sent out!",
+						duration: 2000
+					});
+				else uni.showToast({
+					title: "An error has occurred, please try again later!",
+					icon: "error",
 					duration: 2000
-				})
+				});
 			},
 			
 			formatFloat(value) {

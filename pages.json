@@ -8,115 +8,94 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "Comet Colony"
+				"navigationBarTitleText": "Comet Colony",
+                "enablePullDownRefresh": false
 			}
-		}
-        ,{
+		}, {
             "path": "pages/auth/login",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
+        }, {
             "path": "pages/auth/regis",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
+        }, {
             "path": "pages/auth/user-protocol",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
+        }, {
             "path": "pages/index/home",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
+        }, {
             "path": "pages/index/settings",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
+        }, {
             "path": "pages/index/membership",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
             
-        }
-        ,{
+        }, {
             "path": "pages/index/activity",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
+        }, {
             "path": "pages/test/test",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
+        }, {
             "path" : "pages/sub/profile",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
+        }, {
             "path": "pages/sub/wallet",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
-            "path" : "pages/sub/venue-detail",
-            "style" :                                                                                    
-            {
+        }, {
+            "path": "pages/sub/venue-detail",
+            "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-            
-        }
-        ,{
-            "path" : "pages/sub/reservation",
-            "style" :                                                                                    
-            {
+        }, {
+            "path": "pages/sub/reservation",
+            "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-            
-        }
-        ,{
-            "path" : "pages/sub/reservation-details",
-            "style" :                                                                                    
-            {
+        }, {
+            "path": "pages/sub/reservation-details",
+            "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-            
-        }
-        ,{
-            "path" : "pages/sub/topup-records",
-            "style" :                                                                                    
-            {
+        }, {
+            "path": "pages/sub/topup-records",
+            "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-            
         }
     ],
 	"globalStyle": {

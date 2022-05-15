@@ -1,6 +1,6 @@
 <template>
 	<view>
-		
+		Middle page
 	</view>
 </template>
 
@@ -13,7 +13,10 @@
 		},
 		
 		onLoad(params) {
-			console.log(params);
+			uni.$u.route({
+				url: params.url,
+				type: params.type ?? 'redirect',
+			})
 		},
 		
 		methods: {
@@ -23,5 +26,5 @@
 </script>
 
 <style lang="scss" scoped>
-	
+
 </style>

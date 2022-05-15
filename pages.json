@@ -6,120 +6,70 @@
 	
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "Comet Colony"
-			}
-		}
-        ,{
+		    "path": "pages/index/index",
+		    "style": {
+                "navigationBarTitleText": "",
+		        "enablePullDownRefresh": false
+		    }
+		}, {
             "path": "pages/auth/login",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
-            "path": "pages/auth/regis",
-            "style": {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-        }
-        ,{
+        }, {
             "path": "pages/auth/user-protocol",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
-            "path": "pages/index/home",
-            "style": {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-        }
-        ,{
-            "path": "pages/index/settings",
-            "style": {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-        }
-        ,{
-            "path": "pages/index/membership",
-            "style": {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path": "pages/index/activity",
-            "style": {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-        }
-        ,{
+        }, {
             "path": "pages/test/test",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
-            "path" : "pages/sub/profile",
+        }, {
+            "path": "pages/sub/manage",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
-            "path": "pages/sub/wallet",
+        }, {
+            "path": "pages/auth/regis",
             "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-        }
-        ,{
-            "path" : "pages/sub/venue-detail",
-            "style" :                                                                                    
-            {
+        }, {
+            "path": "pages/index/middle",
+            "style": {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-            
+        }, {
+            "path": "pages/sub/employee",
+            "style": {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+        }, {
+            "path": "pages/sub/user-request",
+            "style": {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
         }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
-	},
-	"tabBar": {
-		"height": "120rpx",
-		"borderStyle": "white",
-		"backgroundColor": "white",
-		"list": [
-			{
-				"pagePath": "pages/index/home",
-				"iconPath": "static/icon/home.png",
-				"selectedIconPath": "static/icon/home-active.png"
-			}, {
-				"pagePath": "pages/index/activity",
-				"iconPath": "static/icon/activity.png",
-				"selectedIconPath": "static/icon/activity-active.png"
-			}, {
-				"pagePath": "pages/index/membership",
-				"iconPath": "static/icon/membership.png",
-				"selectedIconPath": "static/icon/membership-active.png"
-			}, {
-				"pagePath": "pages/index/settings",
-				"iconPath": "static/icon/settings.png",
-				"selectedIconPath": "static/icon/settings-active.png"
+		"backgroundColor": "#F8F8F8",
+		"app-plus": {
+			"titleNView": {
+				"type": "transparent"
 			}
-		]
+		}
 	}
 }

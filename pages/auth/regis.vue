@@ -1,152 +1,142 @@
 <template>
-	<view style="width: 80vw; padding-left: 10vw;">
-		<view class="title">Sign Up</view>
-		<u--form>
-			<u-form-item class="input-field">
-				<u--input @change="checkForm" border="bottom" placeholder="Email" v-model="email"></u--input>
-			</u-form-item>
-			<u-form-item class="input-field">
-				<u--input @change="checkForm" type="password" border="bottom" placeholder="Password" v-model="password"></u--input>
-			</u-form-item>
-			<u-form-item class="input-field">
-				<u--input @change="checkForm" type="password" border="bottom" placeholder="Re-enter Password" v-model="confirmPassword"></u--input>
-			</u-form-item>
-			<u-form-item class="protocol">
-				<u-checkbox-group @change="agree = !agree;checkForm();" size="30rpx" labelSize="30rpx">
-					<u-checkbox
-						:customStyle="{marginBottom: '8px'}"
-						label="I agree with the user protocol"
-					></u-checkbox>
-				</u-checkbox-group>
-			</u-form-item>
+	<view>
+		<u-row>
+			<u-col span="6">
+				<image
+					src="../../static/icon/theme.png"
+					mode="aspectFit"
+					style="width: 50%; height: 100vh; margin-left: 20%;"
+				></image>
+			</u-col>
 			
-			<u-alert v-if="errMsg != ''" :closable="true" title="Error" type = "error" :description="errMsg" fontSize="30rpx" :showIcon="true"></u-alert>
-			
-			<u-form-item class="regis-button">
-				<u-button class="button" @click="onRegis()" :disabled="flag" text="Register!" size="large"></u-button>
-			</u-form-item>
-			
-			<u-form-item>
-				<view class="protocol-link" @click="gotoUserProtocol()">Check out user protocol</view>
-			</u-form-item>
-		</u--form>
+			<u-col span="6" customStyle="padding-right: 20%;">
+				<view style="font-weight: bold; font-size: 46rpx; margin-bottom: 80rpx;">Regis with code</view>
+				<u--form>
+					<view style="color: #2d3748;">Email</view>
+					<u-form-item>
+						<u--input customStyle="border-radius: 10rpx;" v-model="email"></u--input>
+					</u-form-item>
+					
+					<view style="color: #2d3748; margin-top: 40rpx;">Password</view>
+					<u-form-item>
+						<u--input customStyle="border-radius: 10rpx;" type="password" v-model="password"></u--input>
+					</u-form-item>
+					
+					<view style="color: #2d3748; margin-top: 40rpx;">Invitation code</view>
+					<u-form-item>
+						<u--input customStyle="border-radius: 10rpx;" v-model="invitationCode"></u--input>
+					</u-form-item>
+					
+					<u-row customStyle="margin-top: 10rpx;">
+						<u-checkbox-group v-model="protocolSelect">
+							<u-checkbox size="36rpx" name="ok"></u-checkbox>
+						</u-checkbox-group>
+						<view style="color: #2d3748;">
+							I agree to all the<text style="margin: 0 10rpx; color: #007aff;">Terms</text>and<text style="margin: 0 10rpx; color: #007aff;">Privacy policy</text>
+						</view>
+					</u-row>
+					
+					<u-alert v-if="errMsg!=''" :closable="true" title="Error" type = "error" :description="errMsg" fontSize="33rpx" :showIcon="true" customStyle="margin-top: 30rpx;"></u-alert>
+					
+					<u-row customStyle="margin-top: 100rpx;">
+						<u-button color="#007aff" @click="tryRegis" :disabled="!email||!password||!invitationCode||protocolSelect.length==0" text="Register" customStyle="border-radius: 10rpx;"></u-button>
+					</u-row>
+					
+					<view @click="gotoLogin" style="text-align: center; color: #2d3748; margin-top: 40rpx;">
+						Ready have account?<text style="color: #007aff; margin: 0 10rpx;">Click to login!</text>
+					</view>
+				</u--form>
+			</u-col>
+		</u-row>
 	</view>
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-				// Set to false if conditions for register have been matched
-				flag: true,
-				
-				// Whether agreed with protocol or not
-				agree: false,
-				
-				displayName: "",
-				email: "",
-				password: "",
-				confirmPassword: "",
-				
-				errMsg: ""
-			}
-		},
-		
-		onLoad(params) {
-			this.errMsg = params.errMsg ?? ''
-		},
-		
-		methods: {
-			checkForm() {
-				this.flag = !this.email || !this.password || !this.confirmPassword || !this.agree
-			},
+export default {
+	data() {
+		return {
+			// Set to false if entered email and password
+			flag: true,
 			
-			onRegis() {
-				let msg = 'Unexpected error'
+			email: "",
+			password: "",
+			invitationCode: "",
+			protocolSelect: [ ],
+			
+			errMsg: "",
+		};
+	},
+	
+	onLoad(params) {
+		this.errMsg = params.errMsg ?? ''
+	},
+	
+	methods: {
+		checkForm() {
+			this.flag = !this.email || !this.password || !this.invitationCode;
+		},
+		
+		async tryRegis() {
+			let msg = 'Unexpected error';
+			switch(1)
+			{
+			default:
 				if(!this.$u.test.email(this.email))
-					msg = "Invalid email format, please check and retry!"
-				if(this.password != this.confirmPassword)
-					msg = "Wrong confirmed password, please check and retry!"
-				else
 				{
-					// Primary check pass, do register request
-					uni.$u.http.post(
-						'/regis', { }, { params: { displayName: this.displayName, email: this.email, password: this.password } }
-					).then(
-						res => {
-							let {data} = res
-							console.log(data);
-							
-							uni.$u.http.post(
-								'/login', { }, { params: { email: this.email, password: this.password } },
-							).then(
-								res => {
-									let {data} = res
-									console.log(data);
-								
-									// Save token to local storage
-									uni.setStorageSync("token", data.token)
-									console.log("token saved");
-							
-									// Jump to home page
-									uni.$u.route({
-										url: "pages/index/home",
-										type: "reLaunch"
-									})
-								}
-							)
-						}
-					)
+					msg = "Invalid email format, please check and retry!";
+					break;
 				}
 				
-				// Something goes wrong, redirect to this page and show error message
+				let data = await uni.$u.http.post(
+					'/login', { }, { params: { email: this.email, password: this.password } },
+				);
+				
+				if(data.status != 200)
+				{
+					msg = data.message;
+					break;
+				}
+				
+				// Save token to local storage
+				uni.setStorageSync("token", data.token)
+				
+				// Check if has manager permission
+				let res = await uni.$u.http.post("/check-invitation", { }, { params: { invitationCode: this.invitationCode } });
+				if(res.status != 200)
+				{
+					uni.removeStorageSync("token");
+					msg = res.message;
+					break;
+				}
+				
+				// Jump to home page
 				uni.$u.route({
-					url: "pages/auth/regis",
-					type: "redirect",
-					params: {
-						errMsg: msg
-					}
+					url: "pages/sub/manage",
+					type: "reLaunch"
 				})
-			},
-			
-			gotoUserProtocol() {
-				uni.$u.route('pages/auth/user-protocol')
+				return;
 			}
+			
+			// Something goes wrong, redirect to this page and show error message
+			uni.$u.route({
+				url: "pages/auth/regis",
+				type: "redirect",
+				params: {
+					errMsg: msg
+				}
+			});
+		},
+		
+		gotoLogin() {
+			uni.$u.route({
+				url: "pages/auth/login",
+				type: "reLaunch"
+			})
 		}
-	}
+	},
+};
 </script>
 
 <style lang="scss" scoped>
-	.protocol-link {
-		font-size: 20rpx;
-		margin: 0 auto;
-		color: $uni-color-primary;
-		text-decoration: underline;
-	}
 	
-	.protocol {
-		text-align: center;
-	}
-	
-	.title {
-		font-size: 60rpx;
-		font-weight: bold;
-		padding-top: 10vh;
-	}
-	
-	.input-field {
-		padding-top: 2vh;
-	}
-	
-	.regis-button {
-		padding-top: 10vh;
-		
-		.button {
-			font-weight: bold;
-			border-radius: 20rpx;
-			border-color: #000;
-			background-color: #000;
-			color: #fff;
-		}
-	}
 </style>

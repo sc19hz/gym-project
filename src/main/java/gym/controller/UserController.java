@@ -239,6 +239,20 @@ public class UserController
 	}
 	
 	@RequireAuth
+	@PostMapping(path = "/price-range")
+	public Object priceRange(@RequestParam int venueId) {
+		double min = Double.MAX_VALUE;
+		double max = 0D;
+		for(TimeBlock block : this.timeBlocks.findByVenueId(venueId))
+		{
+			double val = block.getFee();
+			if(val < min) min = val;
+			if(val > max) max = val;
+		};
+		return R.ok().add("min", min).add("max", max < Double.MAX_VALUE ? max : 0D);
+	}
+	
+	@RequireAuth
 	@PostMapping(path = "/total-training")
 	public Object totalTraining(HttpServletRequest request) {
 		long time = 0;

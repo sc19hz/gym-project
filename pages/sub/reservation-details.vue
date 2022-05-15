@@ -82,15 +82,16 @@
 					},
 				);
 				
+				console.log("response ", res);
 				if(res.status == 200)
 					uni.showToast({
 						title: "Request has been sent out!",
 						duration: 2000
 					});
 				else uni.showToast({
-					title: "An error has occurred, please try again later!",
+					title: res.message,
 					icon: "error",
-					duration: 2000
+					duration: 3000
 				});
 			},
 			

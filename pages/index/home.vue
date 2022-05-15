@@ -4,7 +4,7 @@
 		<view class="promote-1">Activity</view>
 		<u-row customStyle="margin-bottom: 30rpx">
 			<u-col span="6">
-				<u-tabs lineColor="#000" :list="sortTabs"></u-tabs>
+				<u-tabs @change="changeSort" lineColor="#000" :list="sortTabs"></u-tabs>
 			</u-col>
 			<u-col span="6">
 				<u-search placeholder="search" v-model="searchKey" :showAction="false" height="50rpx"></u-search>
@@ -18,8 +18,11 @@
 				<u-col span="8">
 					<text class="u-line-1" style="font-weight: bold;">{{ item.displayName }}</text>
 				</u-col>
-				<u-col class="people" span="4">
-					<view class="u-line-1" style="text-align: right;">0/20</view>
+				<u-col span="4">
+					<u-row justify="end">
+						<image v-if="item.hat>2" style="width: 30rpx; height: 30rpx;" src="../../static/icon/hat.png" mode="aspectFit"></image>
+						<view class="u-line-1" style="color: #888; margin-left: 10rpx;">{{ item.hat }}</view>
+					</u-row>
 				</u-col>
 			</u-row>
 		</view>
@@ -40,28 +43,43 @@
 				
 				curPage: 0,
 				
-				venues: [
-					
-				]
+				venues: [ ],
 			};
 		},
 		
 		async onLoad() {
-			this.venues = await uni.$u.http.post(
-				"/home",
-				{ },
-				{
-					params: {
-						pageNum: this.curPage,
-						pageSize: 5
-					}
-				},
-			);
+			this.changeSort({ "index": 0 });
 		},
 		
 		methods: {
-			click1(e) {
-				console.log('click1', e);
+			async changeSort(item) {
+				let venues = await uni.$u.http.post(
+					"/home",
+					{ },
+					{
+						params: {
+							pageNum: this.curPage,
+							pageSize: 5
+						}
+					},
+				);
+				
+				for(let i in venues)
+				{
+					let res = await uni.$u.http.post(
+						"/venue-hat",
+						{ },
+						{
+							params: {
+								venueId: venues[i].id
+							}
+						}
+					);
+					venues[i].hat = res.hat;
+				}
+				
+				venues.sort(item.index == 0 ? (a, b) => b.hat - a.hat : (a, b) => a.id - b.id);
+				this.venues = venues;
 			},
 			
 			gotoLogin() {

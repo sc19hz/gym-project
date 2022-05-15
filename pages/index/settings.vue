@@ -105,7 +105,7 @@
 		
 		async onShow(params) {
 			// Obtain user's data
-			let data = await uni.$u.http.post('self');
+			let data = await uni.$u.http.post('/self');
 			this.user = data;
 			this.displayName = data.displayName;
 			this.userIcon = data.icon;

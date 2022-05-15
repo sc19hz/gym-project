@@ -16,11 +16,13 @@
 				<u-col span="2">
 					<block v-if="item.endTime > new Date().getTime()">
 						<view class="reservation-status" v-if="item.status==0" style="color: #ff9900;">Waiting</view>
-						<view class="reservation-status" v-else style="color: #19be6b;">Ontime</view>
+						<view class="reservation-status" v-else-if="item.status==1" style="color: #19be6b;">Ontime</view>
+						<view class="reservation-status" v-else style="color: #f56cfc;">Canceled</view>
 					</block>
 					<block v-else>
-						<view class="reservation-status" v-if="item.status==0" style="color: #fa3534;">Overdue</view>
-						<view class="reservation-status" v-else style="color: #2979ff;">Finish</view>
+						<view class="reservation-status" v-if="item.status==0" style="color: #f56c6c;">Overdue</view>
+						<view class="reservation-status" v-else-if="item.status==1" style="color: #2979ff;">Finish</view>
+						<view class="reservation-status" v-else style="color: #f56cfc;">Canceled</view>
 					</block>
 				</u-col>
 			</u-row>
@@ -88,5 +90,6 @@
 	
 	.reservation-status {
 		font-size: 26rpx;
+		text-align: right;
 	}
 </style>

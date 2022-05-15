@@ -6,10 +6,10 @@
 		<view style="position: absolute; left: 0; top: 0; width: 100vw;">
 			<u-row justify="space-between" gutter="10" customStyle="padding-top: 75vh">
 			    <u-col span="4" offset="1">
-			        <u-button class="login" text="Login" @click="gotoLogin()"></u-button>
+			        <u-button class="login" text="Login" @click="gotoLogin"></u-button>
 			    </u-col>
 			    <u-col span="4" offset="2">
-			        <u-button class="regis" text="Sign up" @click="gotoRegis()"></u-button>
+			        <u-button class="regis" text="Sign up" @click="gotoRegis"></u-button>
 			    </u-col>
 				<u-col span="1"></u-col>
 			</u-row>
@@ -31,11 +31,17 @@
 		
 		methods: {
 			gotoLogin() {
-				uni.$u.route('pages/auth/login')
+				uni.$u.route({
+					url: 'pages/auth/login',
+					type: 'to'
+				});
 			},
 			
 			gotoRegis() {
-				uni.$u.route('pages/auth/regis')
+				uni.$u.route({
+					url: 'pages/auth/regis',
+					type: 'to',
+				});
 			}
 		},
 	}

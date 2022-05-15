@@ -28,8 +28,6 @@ uni.$u.setConfig({
 
 // 请求拦截器
 uni.$u.http.interceptors.request.use(config => { // 可使用async await 做异步操作
-	console.log("get request params");
-	console.log(config.params);
 	config.header = {
 		...config.header,
 		Authorization: 'Bearer ' + uni.getStorageSync("token") // 演示拦截器header加参

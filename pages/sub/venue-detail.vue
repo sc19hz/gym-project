@@ -32,7 +32,7 @@
 			<u-row class="bottom-bar">
 				<u-col span="8">
 					<view style="margin-left: 20rpx; font-weight: bold; color: #3c9cff;">
-						{{ formatFloat(venue.fee) }}£ / hour
+						{{ (priceSection.min!=priceSection.max?formatFloat(priceSection.min)+'-':'')+formatFloat(priceSection.max) }}£ / hour
 					</view>
 				</u-col>
 				<u-col span="4">
@@ -108,6 +108,7 @@
 		data() {
 			return {
 				timeSection: { "startTime": '00:00', "endTime": '00:00' },
+				priceSection: { min: 0, max: 0 },
 				
 				pickDate: false,
 				pickReservable: false,
@@ -142,13 +143,14 @@
 				'/venue', { }, { params: { venueId: params.id } },
 			);
 			
-			console.log(this.venue);
 			let time = new Date();
 			for(let i = 0; i < this.venue.daysAllow; ++i)
 			{
 				let day = new Date(time.getTime() + i * 24 * 60 * 60 * 1000);
 				this.daysAllow[i] = (day.getMonth() + 1) + '/' + day.getDate() + '/' + day.getFullYear();
 			}
+			
+			this.priceSection = await uni.$u.http.post("/price-range", { }, { params: { venueId: this.venue.id } });
 		},
 		
 		methods: {

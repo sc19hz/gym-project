@@ -278,7 +278,7 @@
 						</view>
 					</u-col>
 				</u-row>
-				<u-row v-if="reservations.length==0" customStyle="padding: 10rpx 0;  border-color: #d9d5ec; border-top-style: solid; border-width: 3rpx;" justify="center">
+				<u-row v-if="reservations.length==0" customStyle="color: #888; padding: 10rpx 0;  border-color: #d9d5ec; border-top-style: solid; border-width: 3rpx;" justify="center">
 					No Reservation...
 				</u-row>
 				<u-row customStyle="background-color: #f4f2ff; padding: 10rpx 0; height: 40rpx; border-color: #d9d5ec; border-top-style: solid; border-width: 3rpx;" justify="center">

@@ -1,9 +1,12 @@
 package gym.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,12 +22,17 @@ import gym.dao.InvitationCodeRepository;
 import gym.dao.ManagerRepository;
 import gym.dao.ReservationRepository;
 import gym.dao.TimeBlockRepository;
+import gym.dao.TopupRecordRepository;
+import gym.dao.UserRepository;
 import gym.dao.UserRequestRepository;
 import gym.dao.VenueRepository;
 import gym.entity.Employee;
 import gym.entity.InvitationCode;
 import gym.entity.Reservation;
 import gym.entity.TimeBlock;
+import gym.entity.TopupRecord;
+import gym.entity.User;
+import gym.entity.UserRequest;
 import gym.entity.Venue;
 import gym.service.JwtService;
 import gym.util.R;
@@ -33,6 +41,9 @@ import gym.util.R;
 @RestController
 public class ManageController
 {
+	@Value("${host.address}")
+	private String host;
+	
 	@Autowired
 	private JwtService jwtService;
 	
@@ -60,6 +71,12 @@ public class ManageController
 	@Autowired
 	private UserRequestRepository userRequests;
 	
+	@Autowired
+	private UserRepository users;
+	
+	@Autowired
+	private TopupRecordRepository topupRecords;
+	
 	@RequireAuth
 	@PostMapping(path = "/check-authority")
 	public Object login(HttpServletRequest request) {
@@ -77,6 +94,12 @@ public class ManageController
 		HttpServletRequest request,
 		@RequestParam String invitationCode
 	) {
+		Integer uid = this.jwtService.getUserId(request);
+		if(
+			this.employees.findByUserId(uid) != null
+			|| this.managers.findByUserId(uid) != null
+		) return R.raw(HttpStatus.BAD_REQUEST, "Your are already registered!");
+		
 		InvitationCode code = this.invitationCodes.findByCode(invitationCode);
 		if(code == null)
 			return R.raw(HttpStatus.BAD_REQUEST, "Invalid invitation code, please check and retry!");
@@ -103,7 +126,10 @@ public class ManageController
 	@EmployeeAuth
 	@PostMapping(path = "/manage-venue")
 	public Object venues(HttpServletRequest request) {
-		return this.venues.findByManagerId(this.getManagerId(request));
+		List<Venue> venues = this.venues.findByManagerId(this.getManagerId(request));
+		for(Venue v : venues)
+			v.processURL(this.host);
+		return venues;
 	}
 	
 	@EmployeeAuth
@@ -131,6 +157,40 @@ public class ManageController
 		
 		this.venues.save(v);
 		
+		return R.ok();
+	}
+	
+	@EmployeeAuth
+	@PostMapping(path = "/venue-create")
+	public Object venueCreate(
+		HttpServletRequest request,
+		@RequestParam String name,
+		@RequestParam String location,
+		@RequestParam int sportId,
+		@RequestParam int capacity,
+		@RequestParam int daysAllow
+	) {
+		return R.ok().add(
+			"id",
+			this.venues.save(
+				new Venue(
+					this.getManagerId(request),
+					name,
+					"/image/activity/swim.png",
+					location,
+					sportId,
+					capacity,
+					daysAllow
+				)
+			).getId()
+		);
+	}
+	
+	@EmployeeAuth
+	@Transactional
+	@PostMapping(path = "/venue-del")
+	public Object venueDel(@RequestParam int venueId) {
+		this.venues.deleteById(venueId);
 		return R.ok();
 	}
 	
@@ -175,6 +235,68 @@ public class ManageController
 	@PostMapping(path = "/user-request-list")
 	public Object userRequestList(HttpServletRequest request) {
 		return this.userRequests.findByManagerId(this.getManagerId(request));
+	}
+	
+	@EmployeeAuth
+	@PostMapping(path = "/reserved-venue")
+	public Object reservedVenue(@RequestParam int reservationId) {
+		return this.venues.findById(
+			this.reservations.findById(reservationId).get().getVenueId()
+		).get().processURL(this.host);
+	}
+	
+	@EmployeeAuth
+	@PostMapping(path = "/of-user")
+	public Object ofUser(@RequestParam int userId) {
+		return this.users.findById(userId).get();
+	}
+	
+	@EmployeeAuth
+	@Transactional
+	@PostMapping(path = "/reject-request")
+	public Object rejectRequest(@RequestParam int requestId) {
+		this.userRequests.deleteById(requestId);
+		return R.ok();
+	}
+	
+	@EmployeeAuth
+	@Transactional
+	@PostMapping(path = "/accept-request")
+	public Object acceptRequest(@RequestParam int requestId) {
+		UserRequest req = this.userRequests.findById(requestId).get();
+		
+		Reservation res = this.reservations.findById(req.getReservationId()).get();
+		res.setStatus(Reservation.CANCELED);
+		this.reservations.save(res);
+		
+		this.topupRecords.save(new TopupRecord(req.getUserId(), res.getCost(), 0D));
+		User u = this.users.findById(req.getUserId()).get();
+		u.setAmount(u.getAmount() + res.getCost());
+		this.users.save(u);
+		
+		this.userRequests.delete(req);
+		
+		return R.ok();
+	}
+	
+	@EmployeeAuth
+	@PostMapping(path = "/venue-reservations")
+	public Object venueReservations(@RequestParam int venueId) {
+		return this.reservations.findByVenueId(venueId);
+	}
+	
+	@ManagerAuth
+	@PostMapping(path = "/employee-list")
+	public Object employeeList(HttpServletRequest request) {
+		return this.employees.findByManagerId(this.getManagerId(request));
+	}
+	
+	@ManagerAuth
+	@Transactional
+	@PostMapping(path = "/del-employee")
+	public Object delEmployee(@RequestParam int employeeId) {
+		this.employees.deleteById(employeeId);
+		return R.ok();
 	}
 	
 	private Integer getManagerId(HttpServletRequest request) {

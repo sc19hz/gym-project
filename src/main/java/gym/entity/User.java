@@ -64,6 +64,11 @@ public class User
 		this.registerTime = System.currentTimeMillis();
 	}
 	
+	public User processURL(String host) {
+		this.icon = this.icon.startsWith("/") ? host + this.icon : this.icon;
+		return this;
+	}
+	
 	public Integer getId() { return this.id; }
 	
 	public void setId(Integer id) { this.id = id; }

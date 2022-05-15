@@ -58,4 +58,8 @@ public class UserRequest
 	public String getDescription() { return this.description; }
 	
 	public void setDescription(String description) { this.description = description; }
+	
+	public Long getMakeTime() { return this.makeTime; }
+	
+	public void setMakeTime(Long makeTime) { this.makeTime = makeTime; }
 }

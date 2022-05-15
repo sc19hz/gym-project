@@ -12,4 +12,6 @@ import gym.entity.UserRequest;
 public interface UserRequestRepository extends CrudRepository<UserRequest, Integer>
 {
 	public List<UserRequest> findByManagerId(Integer managerId);
+	
+	public UserRequest findByReservationId(Integer reservationId);
 }

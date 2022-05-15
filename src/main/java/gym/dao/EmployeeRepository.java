@@ -1,5 +1,7 @@
 package gym.dao;
 
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 
 import gym.entity.Employee;
@@ -10,4 +12,6 @@ import gym.entity.Employee;
 public interface EmployeeRepository extends CrudRepository<Employee, Integer>
 {
 	public Employee findByUserId(Integer userId);
+	
+	public List<Employee> findByManagerId(Integer managerId);
 }

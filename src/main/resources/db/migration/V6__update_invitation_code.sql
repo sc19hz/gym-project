@@ -1,4 +1,4 @@
-ALTER TABLE invitation_code ADD make_time INT NOT NULL DEFAULT 0;
+ALTER TABLE invitation_code ADD make_time BIGINT NOT NULL DEFAULT 0;
 
 CREATE TABLE user_request(
 	id INT AUTO_INCREMENT PRIMARY KEY,
@@ -8,3 +8,5 @@ CREATE TABLE user_request(
 	description VARCHAR(256) NOT NULL,
 	make_time BIGINT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE employee ADD regis_time BIGINT NOT NULL DEFAULT 0;

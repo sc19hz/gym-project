@@ -9,6 +9,11 @@ import javax.persistence.Id;
 @Entity(name = "reservation")
 public class Reservation
 {
+	public static final Integer
+		WAITING = 0,
+		CHECKED = 1,
+		CANCELED = 2;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -39,11 +44,7 @@ public class Reservation
 	private Double cost;
 	
 	/**
-	 * <pre>
-	 * 0 = waiting
-	 * 1 = complete
-	 * 2 = canceled
-	 * </pre>
+	 * Valid status are {@link #WAITING}, {@link #CHECKED} and {@link #CANCELED}
 	 */
 	@Column(name = "status", nullable = false)
 	private Integer status;
@@ -65,7 +66,7 @@ public class Reservation
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.cost = cost;
-		this.status = 0;
+		this.status = WAITING;
 	}
 	
 	public Integer getId() { return this.id; }

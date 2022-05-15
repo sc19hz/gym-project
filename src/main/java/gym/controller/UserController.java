@@ -1,14 +1,15 @@
 package gym.controller;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.DigestUtils;
@@ -167,10 +168,10 @@ public class UserController
 	) {
 		User u = this.users.findByEmail(email);
 		if(u == null)
-			return R.raw(HttpStatus.BAD_REQUEST, "Email not find! please check and retry.");
+			return R.raw(HttpStatus.BAD_REQUEST, "Email not find, please check and retry!");
 		
 		if(!DigestUtils.md5DigestAsHex((u.getSalt() + password).getBytes()).equals(u.getPassword()))
-			return R.raw(HttpStatus.BAD_REQUEST, "Wrong password! please check and retry.");
+			return R.raw(HttpStatus.BAD_REQUEST, "Wrong password, please check and retry!");
 		
 		u.setLastLogin(System.currentTimeMillis());
 		u = this.users.save(u);
@@ -181,9 +182,7 @@ public class UserController
 	@RequireAuth
 	@PostMapping(path = "/self")
 	public Object selfInfo(HttpServletRequest request) {
-		return this.processIconAddress(
-			this.users.findById(this.jwtService.getUserId(request)).get()
-		);
+		return this.users.findById(this.jwtService.getUserId(request)).get().processURL(this.host);
 	}
 	
 	@RequireAuth
@@ -218,29 +217,51 @@ public class UserController
 	@PostMapping(path = "/home")
 	public Object home(
 		@RequestParam int pageNum,
-		@RequestParam int pageSize,
-		@RequestParam(required = false) String sort
+		@RequestParam int pageSize
 	) {
-		Page<Venue> page = this.venues.findAll(PageRequest.of(pageNum, pageSize));
+		List<Venue> venues = this.venues.findAll(PageRequest.of(pageNum, pageSize)).getContent();
+		for(Venue v : venues)
+			v.processURL(this.host);
 		
-		// TODO: sort by?
+		return venues;
+	}
+	
+	@RequireAuth
+	@PostMapping(path = "/venue-hat")
+	public Object venueHat(@RequestParam int venueId) {
+		return R.ok().add(
+			"hat",
+			this.reservations.countByVenueIdAndMakeTimeGreaterThan(
+				venueId,
+				System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000
+			)
+		);
+	}
+	
+	@RequireAuth
+	@PostMapping(path = "/total-training")
+	public Object totalTraining(HttpServletRequest request) {
+		long time = 0;
+		for(Reservation r : this.reservations.findByUserId(this.jwtService.getUserId(request)))
+			if(r.getStatus() == Reservation.CHECKED)
+				time += r.getEndTime() - r.getStartTime();
 		
-		return page.getContent();
+		return R.ok().add("hours", (double)time / 60 / 60 / 1000);
 	}
 	
 	@RequireAuth
 	@PostMapping(path = "/venue/swiper-img")
 	public Object getVenueSwiperImgs(@RequestParam int venueId) {
 		List<String> list = new LinkedList<String>();
-		list.add("http://127.0.0.1:8080/image/activity/swim.png");
-		list.add("http://127.0.0.1:8080/image/activity/tennis.png");
+		list.add(this.host + "/image/activity/swim.png");
+		list.add(this.host + "/image/activity/tennis.png");
 		return list;
 	}
 	
 	@RequireAuth
 	@PostMapping(path = "/venue")
 	public Object getVenue(@RequestParam int venueId) {
-		return this.venues.findById(venueId).get();
+		return this.venues.findById(venueId).get().processURL(this.host);
 	}
 	
 	@RequireAuth
@@ -273,11 +294,13 @@ public class UserController
 			for(TimeBlock tb : this.timeBlocks.findByVenueId(venueId)) {
 				Long blockStartTime = today + tb.getStartTime();
 				Long blockEndTime   = today + tb.getEndTime();
-				int num = this.reservations.countByVenueIdAndStartTimeLessThanAndEndTimeGreaterThan(
-					venueId,
-					blockEndTime,
-					blockStartTime
-				);
+				int count = 0;
+				for(Reservation res : this.reservations.findByVenueId(venueId))
+					if(
+						res.getStartTime() < blockEndTime
+						&& res.getEndTime() > blockStartTime
+						&& res.getStatus() != Reservation.CANCELED
+					) ++count;
 				
 				ret.add(
 					R.raw()
@@ -285,7 +308,7 @@ public class UserController
 					.add("startTime", blockStartTime)
 					.add("endTime", blockEndTime)
 					.add("capacity", v.getCapacity())
-					.add("reserved", num)
+					.add("reserved", count)
 					.add("fee", v.getFee())
 				);
 			}
@@ -387,6 +410,12 @@ public class UserController
 		HttpServletRequest request,
 		@RequestParam int reservationId
 	) {
+		if(this.userRequests.findByReservationId(reservationId) != null)
+			return R.raw(
+				HttpStatus.BAD_REQUEST,
+				"A request to cancel this reservation has already been made!"
+			);
+		
 		this.userRequests.save(
 			new UserRequest(
 				this.jwtService.getUserId(request),
@@ -397,22 +426,6 @@ public class UserController
 			)
 		);
 		return R.ok();
-	}
-	
-//	public Object venueDetails(@RequestParam int venueId)
-//	{
-//		Venue v = this.venues.findById(venueId).get();
-//		
-//	}
-	
-	/**
-	 * Add {@link #host} to user's icon path if it starts with '/'
-	 */
-	private User processIconAddress(User u)
-	{
-		String a = u.getIcon();
-		u.setIcon(a.startsWith("/") ? this.host + a : a);
-		return u;
 	}
 	
 	private long getDateTime(int day)

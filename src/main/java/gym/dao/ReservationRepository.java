@@ -11,13 +11,9 @@ import gym.entity.Reservation;
  */
 public interface ReservationRepository extends CrudRepository<Reservation, Integer>
 {
-	public int countByVenueIdAndStartTimeLessThanAndEndTimeGreaterThan(
-		Integer venueId,
-		Long blockEndTime,
-		Long blockStartTime
-	);
-	
 	public List<Reservation> findByUserId(Integer userId);
 	
 	public List<Reservation> findByVenueId(Integer venueId);
+
+	public long countByVenueIdAndMakeTimeGreaterThan(Integer venueId, Long time);
 }

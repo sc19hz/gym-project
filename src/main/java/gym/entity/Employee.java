@@ -20,12 +20,16 @@ public class Employee
 	@Column(name = "manager_id", nullable = false)
 	private Integer managerId;
 	
+	@Column(name = "regis_time", nullable = false)
+	private Long regisTime;
+	
 	public Employee() { }
 	
 	public Employee(Integer userId, Integer managerId)
 	{
 		this.userId = userId;
 		this.managerId = managerId;
+		this.regisTime = System.currentTimeMillis();
 	}
 	
 	public Integer getId() { return this.id; }
@@ -39,4 +43,8 @@ public class Employee
 	public Integer getManagerId() { return this.managerId; }
 	
 	public void setManagerId(Integer managerId) { this.managerId = managerId; }
+	
+	public Long getRegisTime() { return this.regisTime; }
+	
+	public void setRegisTime(Long regisTime) { this.regisTime = regisTime; }
 }

@@ -56,11 +56,27 @@ public class Venue
 	
 	public Venue() { }
 	
-	public Venue(String displayName, String defIcon, String location)
-	{
+	public Venue(
+		Integer managerId,
+		String displayName,
+		String defIcon,
+		String location,
+		Integer activityId,
+		Integer capacity,
+		Integer daysAllow
+	) {
+		this.managerId = managerId;
 		this.displayName = displayName;
 		this.icon = defIcon;
 		this.location = location;
+		this.activityId = activityId;
+		this.capacity = capacity;
+		this.daysAllow = daysAllow;
+	}
+	
+	public Venue processURL(String host) {
+		this.icon = this.icon.startsWith("/") ? host + this.icon : this.icon;
+		return this;
 	}
 	
 	public Integer getId() { return this.id; }
